@@ -1,0 +1,880 @@
+import styled from '@emotion/styled'
+import {
+  Box,
+  BoxProps,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableCellBaseProps,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+  useTheme
+} from '@mui/material'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import Icon from 'src/@core/components/icon'
+import useInvoice from 'src/hooks/useInvoice'
+import { InvoiceTypeSingle } from 'src/types/userTypes'
+
+const MUITableCell = styled(TableCell)<TableCellBaseProps>(({ theme }) => ({
+  borderBottom: 0,
+  paddingLeft: '0 !important',
+  paddingRight: '0 !important'
+  // paddingTop: `${theme.spacing(1)} !important`,
+  // paddingBottom: `${theme.spacing(1)} !important`
+}))
+
+const CalcWrapper = styled(Box)<BoxProps>(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  '&:not(:last-of-type)': {
+    marginBottom: '2px'
+  }
+}))
+
+interface ThisProps {
+  id: number | string
+  type: 'edit' | 'view'
+  invoice: InvoiceTypeSingle
+  loading: boolean
+  setInvoice: Dispatch<SetStateAction<InvoiceTypeSingle>>
+  setLoading: Dispatch<SetStateAction<boolean>>
+}
+
+const InvoiceEdit = (props: ThisProps) => {
+  const { invoice, loading, setInvoice, setLoading } = props
+
+  const { getInvoice } = useInvoice()
+
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  const [recalculated, setRecalculated] = useState<{
+    gwanreebee: number
+    boogasae: number
+    salary: number
+    boogasea2: number
+    sumAdditionalFee: number
+    sumBenefits: number
+  }>({
+    gwanreebee: 0,
+    boogasae: 0,
+    salary: 0,
+    boogasea2: 0,
+    sumAdditionalFee: 0,
+    sumBenefits: 0
+  })
+  const [invoiceDateFrom, setInvoiceDateFrom] = useState<{ year: number; month: number }>({
+    year: 1970,
+    month: 1
+  })
+  const [invoiceDateTo, setInvoiceDateTo] = useState<{ year: number; month: number }>({
+    year: 1970,
+    month: 1
+  })
+
+  const [stackAdded, setStackAdded] = useState<{ additional_fee_list: number; benefit_list: number }>({
+    additional_fee_list: 0,
+    benefit_list: 0
+  })
+
+  const theme = useTheme()
+
+  useEffect(() => {
+    const { sales_amount, commission_rate, commission_fee, plate_fee, additional_fee_list, benefit_list, include_vat } =
+      invoice
+
+    const extractDateFromString = (date: string) => {
+      const d = new Date(date)
+      return {
+        year: d.getFullYear(),
+        month: d.getMonth() + 1
+      }
+    }
+
+    if (invoice) {
+      if (invoice.start_date) {
+        setInvoiceDateFrom(extractDateFromString(invoice.start_date))
+      }
+      if (invoice.end_date) {
+        setInvoiceDateTo(extractDateFromString(invoice.end_date))
+      }
+
+      if (commission_rate > 99.9) {
+        setInvoice(state => ({ ...state, commission_rate: 99.9 }))
+      } else if (commission_rate < 0.1) {
+        setInvoice(state => ({ ...state, commission_rate: 0.1 }))
+      } else if (String(commission_rate).split('.')[1]) {
+        if (String(commission_rate).split('.')[1].length > 1)
+          setInvoice(state => ({ ...state, commission_rate: Number(state.commission_rate.toFixed(1)) }))
+      }
+
+      if (plate_fee < 1) {
+        setInvoice(state => ({ ...state, plate_fee: 1 }))
+      } else if (plate_fee > 10000000) {
+        setInvoice(state => ({ ...state, plate_fee: 10000000 }))
+      }
+
+      //다시 계싼할 것도 다시 계산
+
+      let a: number, b: number, c: number
+      let newGwanreebee: number
+      let newBoogasae: number
+      let newSalary: number
+      let newBoogase2: number
+      let _sumAdditionalFee = 0
+      let _sumBenefits = 0
+
+      if (additional_fee_list.length > 0) {
+        additional_fee_list.forEach(({ price }) => (_sumAdditionalFee += price))
+      }
+
+      if (benefit_list.length > 0) {
+        benefit_list.forEach(({ price }) => (_sumBenefits += price))
+      }
+      //관리비
+      a = sales_amount * commission_rate * 0.01
+      b = Number(a.toFixed(1))
+      newGwanreebee = Math.ceil(b)
+      //부가세
+      a = (sales_amount - commission_fee) * 0.1
+      b = Number(a.toFixed(1))
+      newBoogasae = include_vat ? Math.ceil(b) : 0
+      //지급액 (salary)
+      a = sales_amount - commission_fee
+      b = newBoogasae
+      newSalary = a + b - plate_fee + _sumAdditionalFee
+      //부가세2
+      a = _sumBenefits * 0.1
+      b = Number(a.toFixed(1))
+      newBoogase2 = include_vat ? Math.ceil(b) : 0
+
+      setRecalculated({
+        gwanreebee: newGwanreebee,
+        boogasae: newBoogasae,
+        salary: newSalary,
+        boogasea2: newBoogase2,
+        sumAdditionalFee: _sumAdditionalFee,
+        sumBenefits: _sumBenefits
+      })
+    }
+  }, [invoice])
+
+  useEffect(() => {
+    const reFrom = invoiceDateFrom.year * 12 + invoiceDateFrom.month
+    const reTo = invoiceDateTo.year * 12 + invoiceDateTo.month
+
+    if (reFrom > reTo) {
+      setInvoiceDateFrom({ year: invoiceDateTo.year, month: invoiceDateTo.month })
+    }
+  }, [invoiceDateFrom, invoiceDateTo])
+
+  useEffect(() => {
+    const { id } = props
+
+    const fetchData = async () => {
+      const res = await getInvoice(id as string)
+      if (res) {
+        setInvoice(res)
+        setIsLoading(false)
+      } else {
+        toast.error('알 수 없는 오류가 발생하였습니다.')
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <Box sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <CircularProgress color='primary' />
+      </Box>
+    )
+  }
+
+  return (
+    <Card>
+      <CardContent>
+        <Grid container>
+          <Grid item xl={6} xs={12} sx={{ mb: { xl: 0, xs: 4 } }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ mb: 6, display: 'flex', alignItems: 'center' }}>
+                <svg
+                  width={30}
+                  height={25}
+                  version='1.1'
+                  viewBox='0 0 30 23'
+                  xmlns='http://www.w3.org/2000/svg'
+                  xmlnsXlink='http://www.w3.org/1999/xlink'
+                >
+                  <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                    <g id='Artboard' transform='translate(-95.000000, -51.000000)'>
+                      <g id='logo' transform='translate(95.000000, 50.000000)'>
+                        <path
+                          id='Combined-Shape'
+                          fill={theme.palette.primary.main}
+                          d='M30,21.3918362 C30,21.7535219 29.9019196,22.1084381 29.7162004,22.4188007 C29.1490236,23.366632 27.9208668,23.6752135 26.9730355,23.1080366 L26.9730355,23.1080366 L23.714971,21.1584295 C23.1114106,20.7972624 22.7419355,20.1455972 22.7419355,19.4422291 L22.7419355,19.4422291 L22.741,12.7425689 L15,17.1774194 L7.258,12.7425689 L7.25806452,19.4422291 C7.25806452,20.1455972 6.88858935,20.7972624 6.28502902,21.1584295 L3.0269645,23.1080366 C2.07913318,23.6752135 0.850976404,23.366632 0.283799571,22.4188007 C0.0980803893,22.1084381 2.0190442e-15,21.7535219 0,21.3918362 L0,3.58469444 L0.00548573643,3.43543209 L0.00548573643,3.43543209 L0,3.5715689 C3.0881846e-16,2.4669994 0.8954305,1.5715689 2,1.5715689 C2.36889529,1.5715689 2.73060353,1.67359571 3.04512412,1.86636639 L15,9.19354839 L26.9548759,1.86636639 C27.2693965,1.67359571 27.6311047,1.5715689 28,1.5715689 C29.1045695,1.5715689 30,2.4669994 30,3.5715689 L30,3.5715689 Z'
+                        />
+                        <polygon
+                          id='Rectangle'
+                          opacity='0.077704'
+                          fill={theme.palette.common.black}
+                          points='0 8.58870968 7.25806452 12.7505183 7.25806452 16.8305646'
+                        />
+                        <polygon
+                          id='Rectangle'
+                          opacity='0.077704'
+                          fill={theme.palette.common.black}
+                          points='0 8.58870968 7.25806452 12.6445567 7.25806452 15.1370162'
+                        />
+                        <polygon
+                          id='Rectangle'
+                          opacity='0.077704'
+                          fill={theme.palette.common.black}
+                          points='22.7419355 8.58870968 30 12.7417372 30 16.9537453'
+                          transform='translate(26.370968, 12.771227) scale(-1, 1) translate(-26.370968, -12.771227) '
+                        />
+                        <polygon
+                          id='Rectangle'
+                          opacity='0.077704'
+                          fill={theme.palette.common.black}
+                          points='22.7419355 8.58870968 30 12.6409734 30 15.2601969'
+                          transform='translate(26.370968, 11.924453) scale(-1, 1) translate(-26.370968, -11.924453) '
+                        />
+                        <path
+                          id='Rectangle'
+                          fillOpacity='0.15'
+                          fill={theme.palette.common.white}
+                          d='M3.04512412,1.86636639 L15,9.19354839 L15,9.19354839 L15,17.1774194 L0,8.58649679 L0,3.5715689 C3.0881846e-16,2.4669994 0.8954305,1.5715689 2,1.5715689 C2.36889529,1.5715689 2.73060353,1.67359571 3.04512412,1.86636639 Z'
+                        />
+                        <path
+                          id='Rectangle'
+                          fillOpacity='0.35'
+                          fill={theme.palette.common.white}
+                          transform='translate(22.500000, 8.588710) scale(-1, 1) translate(-22.500000, -8.588710) '
+                          d='M18.0451241,1.86636639 L30,9.19354839 L30,9.19354839 L30,17.1774194 L15,8.58649679 L15,3.5715689 C15,2.4669994 15.8954305,1.5715689 17,1.5715689 C17.3688953,1.5715689 17.7306035,1.67359571 18.0451241,1.86636639 Z'
+                        />
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+                <Typography
+                  variant='h6'
+                  sx={{ ml: 2.5, fontWeight: 600, lineHeight: 'normal', textTransform: 'uppercase' }}
+                >
+                  {'급여'}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xl={6} xs={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xl: 'flex-end', xs: 'flex-start' } }}>
+              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
+                <MUITableCell>
+                  <Typography variant='h6'>Invoice</Typography>
+                </MUITableCell>
+                <MUITableCell>
+                  <Typography variant='h6' sx={{ pl: 2 }}>{`#${
+                    // invoice && invoice.id ? invoice.id : '정의되지 않음'
+                    props.id
+                  }`}</Typography>
+                </MUITableCell>
+              </Box>
+              <Box sx={{ mb: props.type === 'edit' ? 4 : null, display: 'flex', alignItems: 'center' }}>
+                <Typography variant='body2' sx={{ mr: 3, width: '100px' }}>
+                  시일:
+                </Typography>
+
+                {/* 여기부터가 한 묶음 */}
+                {props.type === 'edit' ? (
+                  <>
+                    <FormControl sx={{ maxWidth: 100, mr: 2 }}>
+                      <InputLabel id='invoice-filter-year' sx={{ pl: 5 }}>
+                        년
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={invoiceDateFrom.year}
+                        id='invoice-filter-year'
+                        label='년'
+                        labelId='invoice-filter-year'
+                        onChange={e =>
+                          setInvoiceDateFrom(state => ({
+                            ...state,
+                            year: e.target.value as number
+                          }))
+                        }
+                        size='small'
+                        sx={{ mb: 2, ml: 4 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 300
+                            }
+                          }
+                        }}
+                        disabled={isLoading}
+                      >
+                        {(function () {
+                          const date = new Date()
+                          return Array.from(Array(date.getFullYear() - 1999).keys()).map((i, index) => {
+                            const value: number = i + 2000
+                            return (
+                              <MenuItem key={index} value={value}>
+                                {value}
+                              </MenuItem>
+                            )
+                          })
+                        })()}
+                      </Select>
+                    </FormControl>
+
+                    <FormControl sx={{ maxWidth: 60, mr: 4 }}>
+                      <InputLabel id='invoice-filter-year' sx={{ pl: 5 }}>
+                        월
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={invoiceDateFrom.month}
+                        id='invoice-filter-month'
+                        label='월'
+                        labelId='invoice-filter-month'
+                        onChange={e =>
+                          setInvoiceDateFrom(state => ({
+                            ...state,
+                            month: e.target.value as number
+                          }))
+                        }
+                        size='small'
+                        sx={{ mb: 2, ml: 4 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 300
+                            }
+                          }
+                        }}
+                        disabled={isLoading}
+                      >
+                        {(function () {
+                          const date = new Date()
+                          const now = date.getFullYear() * 12 + date.getMonth()
+
+                          return Array.from(Array(12).keys()).map(i => {
+                            const value = i + 1
+                            const disabled = now < i + invoiceDateFrom.year * 12
+                            return (
+                              <MenuItem key={i} value={value} disabled={disabled}>
+                                {value}
+                              </MenuItem>
+                            )
+                          })
+                        })()}
+                      </Select>
+                    </FormControl>
+                  </>
+                ) : (
+                  <MUITableCell>
+                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                      {invoice.start_date}
+                    </Typography>
+                  </MUITableCell>
+                )}
+                {/* 여기까지가 한 묶음 */}
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant='body2' sx={{ mr: 3, width: '100px' }}>
+                  말일:
+                </Typography>
+
+                {/* 여기부터가 한 묶음 */}
+                {props.type === 'edit' ? (
+                  <>
+                    <FormControl sx={{ maxWidth: 100, mr: 2 }}>
+                      <InputLabel id='2nd-invoice-filter-year' sx={{ pl: 5 }}>
+                        년
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={invoiceDateTo.year}
+                        id='2nd-invoice-filter-year'
+                        label='년'
+                        labelId='2nd-invoice-filter-year'
+                        onChange={e =>
+                          setInvoiceDateTo(state => ({
+                            ...state,
+                            year: e.target.value as number
+                          }))
+                        }
+                        size='small'
+                        sx={{ mb: 2, ml: 4 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 300
+                            }
+                          }
+                        }}
+                        disabled={isLoading}
+                      >
+                        {(function () {
+                          const date = new Date()
+                          return Array.from(Array(date.getFullYear() - 1999).keys()).map((i, index) => {
+                            const value: number = i + 2000
+                            return (
+                              <MenuItem key={index} value={value}>
+                                {value}
+                              </MenuItem>
+                            )
+                          })
+                        })()}
+                      </Select>
+                    </FormControl>
+
+                    <FormControl sx={{ maxWidth: 60, mr: 4 }}>
+                      <InputLabel id='2nd-invoice-filter-year' sx={{ pl: 5 }}>
+                        월
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={invoiceDateTo.month}
+                        id='2nd-invoice-filter-month'
+                        label='월'
+                        labelId='2nd-invoice-filter-month'
+                        onChange={e =>
+                          setInvoiceDateTo(state => ({
+                            ...state,
+                            month: e.target.value as number
+                          }))
+                        }
+                        size='small'
+                        sx={{ mb: 2, ml: 4 }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 300
+                            }
+                          }
+                        }}
+                        disabled={isLoading}
+                      >
+                        {(function () {
+                          const date = new Date()
+                          const now = date.getFullYear() * 12 + date.getMonth()
+
+                          return Array.from(Array(12).keys()).map(i => {
+                            const value = i + 1
+                            const disabled = now < i + invoiceDateTo.year * 12
+                            return (
+                              <MenuItem key={i} value={value} disabled={disabled}>
+                                {value}
+                              </MenuItem>
+                            )
+                          })
+                        })()}
+                      </Select>
+                    </FormControl>
+                  </>
+                ) : (
+                  <MUITableCell>
+                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                      {invoice.end_date}
+                    </Typography>
+                  </MUITableCell>
+                )}
+                {/* 여기까지가 한 묶음 */}
+              </Box>
+              {props.type === 'edit' && (
+                <Box>
+                  <FormControlLabel
+                    value={invoice.include_vat}
+                    control={
+                      <Switch
+                        color='primary'
+                        checked={invoice.include_vat}
+                        onChange={e => setInvoice(state => ({ ...state, include_vat: e.target.checked }))}
+                      />
+                    }
+                    label='부가세 포함'
+                    labelPlacement='start'
+                    disabled={isLoading}
+                  />
+                </Box>
+              )}
+            </Box>
+          </Grid>
+        </Grid>
+      </CardContent>
+
+      <Divider />
+
+      <CardContent>
+        <Grid container>
+          <Typography variant='body2' sx={{ fontWeight: 600 }}>
+            1차 정산액
+          </Typography>
+        </Grid>
+      </CardContent>
+
+      <Divider />
+      {props.type === 'edit' && (
+        <>
+          {invoice.additional_fee_list.map((i, index) => {
+            return (
+              <Box
+                key={index}
+                sx={{ border: '1px solid #ccc', borderRadius: 1, display: 'flex', '&:not(:first-child)': { mb: 2 } }}
+              >
+                <TextField
+                  label='이름'
+                  type='text'
+                  size='small'
+                  sx={{ width: 200, m: 2 }}
+                  // inputProps={{ min: -10000000, max: 10000000 }}
+                  value={invoice.additional_fee_list[index].name}
+                  onChange={e =>
+                    setInvoice(state => {
+                      let list = state.additional_fee_list
+                      list[index].name = e.target.value
+                      return { ...state, additional_fee_list: list }
+                    })
+                  }
+                  disabled={isLoading}
+                />
+
+                <TextField
+                  label='금액 (₩)'
+                  type='number'
+                  size='small'
+                  sx={{ width: 200, m: 2 }}
+                  inputProps={{ min: -10000000, max: 10000000 }}
+                  value={invoice.additional_fee_list[index].price}
+                  onChange={e =>
+                    setInvoice(state => {
+                      let list = state.additional_fee_list
+                      const value = Number(e.target.value)
+                      if (value < -10000000) {
+                        list[index].price = -10000000
+                      } else if (value > 10000000) {
+                        list[index].price = 10000000
+                      } else {
+                        list[index].price = value
+                      }
+                      return { ...state, additional_fee_list: list }
+                    })
+                  }
+                  disabled={isLoading}
+                />
+
+                <IconButton
+                  size='small'
+                  disabled={isLoading}
+                  sx={{ width: 48, mt: 1, mb: 1 }}
+                  onClick={e => {
+                    setInvoice(state => {
+                      let list = state.additional_fee_list
+                      list = list.filter((j, jndex) => jndex !== index)
+                      return { ...state, additional_fee_list: list }
+                    })
+                  }}
+                >
+                  <Icon icon='mdi:trash' />
+                </IconButton>
+              </Box>
+            )
+          })}
+          <Button
+            variant='contained'
+            onClick={() => {
+              setInvoice(state => ({
+                ...state,
+                additional_fee_list: [
+                  ...state.additional_fee_list,
+                  { name: `새 기타 금액 ${stackAdded.additional_fee_list}`, price: 2000 }
+                ]
+              }))
+              setStackAdded(state => ({ ...state, additional_fee_list: state.additional_fee_list + 1 }))
+            }}
+            disabled={isLoading}
+          >
+            기타 금액 추가
+          </Button>
+          <Divider />
+        </>
+      )}
+
+      {props.type === 'view' && (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              {invoice.additional_fee_list.length > 0 && (
+                <TableRow>
+                  <TableCell>설명</TableCell>
+                  <TableCell>금액</TableCell>
+                </TableRow>
+              )}
+            </TableHead>
+            <TableBody>
+              {invoice &&
+                invoice.additional_fee_list.map(({ name, price }, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{name}</TableCell>
+                      <TableCell>₩ {price.toLocaleString('en-US')}</TableCell>
+                    </TableRow>
+                  )
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      <CardContent>
+        <Grid container>
+          <Grid item xs={12} sm={7} lg={8} sx={{ order: { sm: 1, xs: 2 } }}></Grid>
+          <Grid item xs={12} sm={5} lg={4} sx={{ mb: { sm: 0, xs: 4 }, order: { sm: 2, xs: 1 } }}>
+            <CalcWrapper>
+              <Typography variant='body2'>기본 수수료:</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {invoice.sales_amount.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>수수료율:</Typography>
+              {props.type === 'edit' ? (
+                <OutlinedInput
+                  type='number'
+                  size='small'
+                  sx={{ width: 200 }}
+                  inputProps={{ min: 0.1, max: 99.9, style: { textAlign: 'right' } }}
+                  value={invoice.commission_rate}
+                  endAdornment={<InputAdornment position='start'>%</InputAdornment>}
+                  onChange={e => setInvoice(state => ({ ...state, commission_rate: Number(e.target.value) }))}
+                  disabled={isLoading}
+                />
+              ) : (
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  {invoice.commission_rate} %
+                </Typography>
+              )}
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>지입료:</Typography>
+              {props.type === 'edit' ? (
+                <OutlinedInput
+                  type='number'
+                  size='small'
+                  sx={{ width: 200 }}
+                  inputProps={{ min: 1, max: 10000000, style: { textAlign: 'right' } }}
+                  value={invoice.plate_fee}
+                  endAdornment={<InputAdornment position='start'>₩</InputAdornment>}
+                  onChange={e => setInvoice(state => ({ ...state, plate_fee: Number(e.target.value) }))}
+                  disabled={isLoading}
+                />
+              ) : (
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  ₩ {invoice.plate_fee.toLocaleString('en-US')}
+                </Typography>
+              )}
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>관리비:</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.gwanreebee.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>부가세:</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.boogasae.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>기타(상위 항목 참고):</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.sumAdditionalFee.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <Divider />
+            <CalcWrapper>
+              <Typography variant='body2'>1차 정산액:</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.salary.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+          </Grid>
+        </Grid>
+      </CardContent>
+
+      <Divider />
+
+      {props.type === 'edit' && (
+        <>
+          {invoice.benefit_list.map((i, index) => {
+            return (
+              <Box
+                key={index}
+                sx={{ border: '1px solid #ccc', borderRadius: 1, display: 'flex', '&:not(:first-child)': { mb: 2 } }}
+              >
+                <TextField
+                  label='이름'
+                  type='text'
+                  size='small'
+                  sx={{ width: 200, m: 2 }}
+                  // inputProps={{ min: -10000000, max: 10000000 }}
+                  value={invoice.benefit_list[index].name}
+                  onChange={e =>
+                    setInvoice(state => {
+                      let list = state.benefit_list
+                      list[index].name = e.target.value
+                      return { ...state, benefit_list: list }
+                    })
+                  }
+                  disabled={isLoading}
+                />
+
+                <TextField
+                  label='금액 (₩)'
+                  type='number'
+                  size='small'
+                  sx={{ width: 200, m: 2 }}
+                  inputProps={{ min: -10000000, max: 10000000 }}
+                  value={invoice.benefit_list[index].price}
+                  onChange={e =>
+                    setInvoice(state => {
+                      let list = state.benefit_list
+                      const value = Number(e.target.value)
+                      if (value < -10000000) {
+                        list[index].price = -10000000
+                      } else if (value > 10000000) {
+                        list[index].price = 10000000
+                      } else {
+                        list[index].price = value
+                      }
+                      return { ...state, benefit_list: list }
+                    })
+                  }
+                  disabled={isLoading}
+                />
+
+                <IconButton
+                  size='small'
+                  disabled={isLoading}
+                  sx={{ width: 48, mt: 1, mb: 1 }}
+                  onClick={e => {
+                    setInvoice(state => {
+                      let list = state.benefit_list
+                      list = list.filter((j, jndex) => jndex !== index)
+                      return { ...state, benefit_list: list }
+                    })
+                  }}
+                >
+                  <Icon icon='mdi:trash' />
+                </IconButton>
+              </Box>
+            )
+          })}
+          <Button
+            variant='contained'
+            onClick={() => {
+              setInvoice(state => ({
+                ...state,
+                benefit_list: [...state.benefit_list, { name: `새 수당 ${stackAdded.benefit_list}`, price: 2000 }]
+              }))
+              setStackAdded(state => ({ ...state, benefit_list: state.benefit_list + 1 }))
+            }}
+            disabled={isLoading}
+          >
+            수당 추가
+          </Button>
+          <Divider />
+        </>
+      )}
+
+      {props.type === 'view' && (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              {invoice.benefit_list.length > 0 && (
+                <TableRow>
+                  <TableCell>설명</TableCell>
+                  <TableCell>금액</TableCell>
+                </TableRow>
+              )}
+            </TableHead>
+            <TableBody>
+              {invoice &&
+                invoice.benefit_list.map(({ name, price }, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{name}</TableCell>
+                      <TableCell>₩ {price.toLocaleString('en-US')}</TableCell>
+                    </TableRow>
+                  )
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      <CardContent>
+        <Grid container>
+          <Grid item xs={12} sm={7} lg={8} sx={{ order: { sm: 1, xs: 2 } }}>
+            {/* <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+              <Typography variant='body2' sx={{ mr: 2, fontWeight: 600 }}>
+                Salesperson:
+              </Typography>
+              <Typography variant='body2'>Tommy Shelby</Typography>
+            </Box>
+
+            <Typography variant='body2'>Thanks for your business</Typography> */}
+          </Grid>
+          <Grid item xs={12} sm={5} lg={4} sx={{ mb: { sm: 0, xs: 4 }, order: { sm: 2, xs: 1 } }}>
+            <CalcWrapper>
+              <Typography variant='body2'>수당 (상위 항목 참고):</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.sumBenefits.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <CalcWrapper>
+              <Typography variant='body2'>부가세 2:</Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                ₩ {recalculated.boogasea2.toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+            <Divider />
+            <CalcWrapper>
+              <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                최종 지급액:
+              </Typography>
+              <Typography variant='body2' sx={{ fontWeight: 600, color: 'black' }}>
+                ₩ {(recalculated.salary + recalculated.sumBenefits).toLocaleString('en-US')}
+              </Typography>
+            </CalcWrapper>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default InvoiceEdit
