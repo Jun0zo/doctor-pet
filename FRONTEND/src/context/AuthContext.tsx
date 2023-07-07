@@ -5,7 +5,7 @@ import { createContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 
 // ** Axios
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios from 'axios'
 
 // ** Config
 import authConfig from 'src/configs/auth'
@@ -23,8 +23,6 @@ import {
 // ** 우리의 커스텀 서버
 import server from './server'
 import { atom, useRecoilState } from 'recoil'
-import API from 'src/configs/api'
-import { toast } from 'react-hot-toast'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -69,69 +67,28 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
-      const storedToken = window.localStorage.getItem('accessToken')!
-      const refreshToken = localStorage.getItem('refreshToken')!
-
-      const handleSuccess = (res: AxiosResponse) => {
-        const { created_at, email, id, is_active, name, role_name, updated_at } = res.data
-        const result = { id, role: 'admin', fullName: name, username: role_name, email, password: '0000' }
-
-        setLoading(false)
-        setUser({ ...result })
-        setUserData({ ...result })
-      }
-
+      const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)!
       if (storedToken) {
         setLoading(true)
         await server
-          .get(API.USERS.me, {
+          .get(authConfig.meEndpoint, {
             headers: {
               Authorization: `Bearer ${storedToken}`
             }
           })
           .then(async response => {
-            handleSuccess(response)
+            setLoading(false)
+            setUser({ ...FAKE_USER_DATA })
+            setUserData({ ...FAKE_USER_DATA })
           })
           .catch(() => {
-            if (refreshToken) {
-              server
-                .post(API.AUTH.refresh, { refresh_token: refreshToken })
-                .then(res => {
-                  const brandNewAccessToken: string = res.data.access_token!
-
-                  localStorage.setItem('accessToken', brandNewAccessToken)
-                  server
-                    .get(API.USERS.me, {
-                      headers: {
-                        Authorization: `Bearer ${brandNewAccessToken}`
-                      }
-                    })
-                    .then(async response => {
-                      handleSuccess(response)
-                    })
-                })
-                .catch(err => {
-                  // refreshToken또한 만료된 경우
-                  // toast.error('세션이 만료되었습니다. 다시 로그인 해주세요.')
-                  localStorage.removeItem('userData')
-                  localStorage.removeItem('refreshToken')
-                  localStorage.removeItem('accessToken')
-                  setUser(null)
-                  setLoading(false)
-                  if (!router.pathname.includes('login')) {
-                    router.replace('/login')
-                  }
-                })
-            } else {
-              // toast.error('세션이 만료되었습니다. 다시 로그인 해주세요.')
-              localStorage.removeItem('userData')
-              localStorage.removeItem('refreshToken')
-              localStorage.removeItem('accessToken')
-              setUser(null)
-              setLoading(false)
-              if (!router.pathname.includes('login')) {
-                router.replace('/login')
-              }
+            localStorage.removeItem('userData')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('accessToken')
+            setUser(null)
+            setLoading(false)
+            if (/*authConfig.onTokenExpiration === 'logout' &&*/ !router.pathname.includes('login')) {
+              router.replace('/login')
             }
           })
       } else {
@@ -143,36 +100,26 @@ const AuthProvider = ({ children }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    console.log(userData)
+  }, [userData])
+
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
     server
-      .post(API.AUTH.login, params)
+      .post(authConfig.loginEndpoint, params)
       .then(async response => {
-        window.localStorage.setItem('accessToken', response.data.access_token)
-        if (params.rememberMe === true) window.localStorage.setItem('refreshToken', response.data.refresh_token)
-        server
-          .get(API.USERS.me, {
-            headers: {
-              Authorization: `Bearer ${response.data.access_token}`
-            }
-          })
-          .then(res => {
-            const returnUrl = router.query.returnUrl
-            const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-            const { created_at, email, id, is_active, name, role_name, updated_at } = res.data
-            const result = {
-              id,
-              role: 'admin',
-              fullName: name,
-              username: role_name,
-              email,
-              password: '0000'
-            }
+        window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.access_token)
 
-            setUser({ ...result })
-            setUserData({ ...result })
-            window.localStorage.setItem('userData', JSON.stringify(result))
-            router.replace(redirectURL as string)
-          })
+        const returnUrl = router.query.returnUrl
+
+        setUser({ ...FAKE_USER_DATA })
+        setUserData({ ...FAKE_USER_DATA })
+        window.localStorage.setItem('userData', JSON.stringify(FAKE_USER_DATA))
+
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+
+        console.log(returnUrl, redirectURL)
+        router.replace(redirectURL as string)
       })
 
       .catch(err => {
@@ -180,18 +127,11 @@ const AuthProvider = ({ children }: Props) => {
       })
   }
 
-  const handleLogout = (alertSessionExpired?: boolean) => {
-    if (alertSessionExpired === undefined) alertSessionExpired = false
-
-    if (alertSessionExpired) {
-      toast.error('세션이 만료되었습니다. 다시 로그인 해주세요.')
-    }
+  const handleLogout = () => {
     setUser(null)
     setUserData(null)
-    setLoading(false)
     window.localStorage.removeItem('userData')
-    window.localStorage.removeItem('accessToken')
-    window.localStorage.removeItem('refreshToken')
+    window.localStorage.removeItem(authConfig.storageTokenKeyName)
     router.push('/login')
   }
 

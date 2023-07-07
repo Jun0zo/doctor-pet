@@ -17,9 +17,7 @@ const UserListDialog = ({
   handleClose,
   textConfirm = '확인',
   textDismiss = '취소',
-  handleConfirm = () => {
-    return
-  }
+  handleConfirm = () => {}
 }: Props) => {
   return (
     <Dialog

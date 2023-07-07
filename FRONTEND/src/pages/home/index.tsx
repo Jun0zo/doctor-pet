@@ -1,26 +1,28 @@
-import { ReactNode, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import BlankLayout from 'src/@core/layouts/BlankLayout'
-import { Box, Button, Container } from '@mui/material'
-
-const HomeComponent = () => {
-  useEffect(()=> {
-    alert('!!start')
-  }, [])
-  return (
-    <Container style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-      메인 페이지입니다.
-    </Container>
-  )
-}
+// ** MUI Imports
+import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import DogImage from "src/images/dog.png";
 
 const Home = () => {
-  const router = useRouter()
+  console.log(DogImage);
+  return (
+    <Grid container spacing={6}>
+      <Grid item xs={3}>
+        <Card sx={{}}>
+          <CardHeader title="프로젝트를 시작해볼까? 🚀"></CardHeader>
+          <img src={DogImage.src} width="200px" />
+          <CardContent>
+            <Typography sx={{ mb: 2 }}>
+              All the best for your new project.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+  );
+};
 
-  return <HomeComponent />
-
-}
-
-export default Home
-
-Home.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
+export default Home;

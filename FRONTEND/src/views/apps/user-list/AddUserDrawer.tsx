@@ -15,14 +15,12 @@ import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import server from 'src/context/server'
 import toast from 'react-hot-toast'
-import API from 'src/configs/api'
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right'
 
 interface Props {
   open: boolean
   onClose: () => void
-  onSuccess?: () => Promise<void>
 }
 
 interface UserData {
@@ -41,7 +39,7 @@ const schema = yup.object().shape({
   email: yup.string().email().required()
 })
 
-const AddUserDrawer = ({ open, onClose, onSuccess }: Props) => {
+const AddUserDrawer = ({ open, onClose }: Props) => {
   const defaultValues = {
     email: ''
   }
@@ -60,34 +58,26 @@ const AddUserDrawer = ({ open, onClose, onSuccess }: Props) => {
 
   const onInviteSubmit = (data: UserData) => {
     const fetchData = async () => {
-      const res = await server.post(
-        API.USERS.invite,
-        {
+      const res = await server.post('/초대장보내는주소', {
+        data: {
           email: data.email
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
-          }
         }
-      )
+      })
 
       if (res.data) {
-        onClose()
-        onSuccess && onSuccess()
+        onclose()
       }
     }
 
     toast.promise(fetchData(), {
       loading: '전송 중...',
       success: '해당 메일로 초대장을 보냈습니다.',
-      error: err => err.response.data.message
+      error: '알 수 없는 오류가 발생했습니다.'
     })
   }
 
   React.useEffect(() => {
     if (open) reset()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   return (

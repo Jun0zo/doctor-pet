@@ -18,7 +18,7 @@ const AppBarContent = (props: Props) => {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
+      <ModeToggler settings={settings} saveSettings={saveSettings} />
       <UserDropdown settings={settings} />
     </Box>
   )
