@@ -1,61 +1,57 @@
+import React, { useEffect, useState } from "react";
+
 // ** MUI Imports
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
+import { Card, Grid, CardHeader, CardContent } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
 import DogImage from "src/images/dog.png";
 import DogCallendar from "src/images/dog_callendar.png";
 import DogHospital from "src/images/dog_hospital.png";
 
 const MenuList = () => {
-  console.log(DogImage);
+  const [isXs, setIsXs] = useState(window.innerWidth < 600);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsXs(window.innerWidth < 600);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const menuInfos = [
+    { title: "애완견 진단", img: DogImage },
+    { title: "예약 일정", img: DogCallendar },
+    { title: "주변 병원", img: DogHospital },
+    { title: "주변 약국", img: DogImage },
+  ];
+
+  console.log(menuInfos);
+
   return (
     <Grid container spacing={6}>
-      <Grid item xs={3}>
-        <Card sx={{ textAlign: "center" }}>
-          <CardHeader title="애완견 진단"></CardHeader>
-          <img src={DogImage.src} width="200px" />
-          <CardContent>
-            {/* <Typography sx={{ mb: 2 }}>
-              All the best for your new project.
-            </Typography> */}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={3}>
-        <Card sx={{ textAlign: "center" }}>
-          <CardHeader title="애완견 예약"></CardHeader>
-          <img src={DogCallendar.src} width="200px" />
-          <CardContent>
-            {/* <Typography sx={{ mb: 2 }}>
-              All the best for your new project.
-            </Typography> */}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={3}>
-        <Card sx={{ textAlign: "center" }}>
-          <CardHeader title="주변 병원"></CardHeader>
-          <img src={DogHospital.src} width="200px" />
-          <CardContent>
-            {/* <Typography sx={{ mb: 2 }}>
-              All the best for your new project.
-            </Typography> */}
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={3}>
-        <Card sx={{ textAlign: "center" }}>
-          <CardHeader title="애완견 진단"></CardHeader>
-          <img src={DogImage.src} width="200px" />
-          <CardContent>
-            {/* <Typography sx={{ mb: 2 }}>
-              All the best for your new project.
-            </Typography> */}
-          </CardContent>
-        </Card>
-      </Grid>
+      {menuInfos.map((menuInfo) => (
+        <Grid item md={3} sm={6} xs={12}>
+          {isXs ? (
+            <Card sx={{ textAlign: "center" }}>
+              <CardContent sx={{ padding: "1.25rm", display: "flex" }}>
+                <img src={menuInfo.img.src} width="100px" />
+                <h3>{menuInfo.title}</h3>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card sx={{ textAlign: "center" }}>
+              <CardContent sx={{ textAlign: "center" }}>
+                <h3>{menuInfo.title}</h3>
+                <img src={menuInfo.img.src} width="200px" />
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+      ))}
     </Grid>
   );
 };

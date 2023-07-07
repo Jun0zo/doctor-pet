@@ -6,15 +6,19 @@ import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import MenuList from "src/views/pages/home/MenuList";
 
-import DogImage from "src/images/dog.png";
-import DogCallendar from "src/images/dog_callendar.png";
-import DogHospital from "src/images/dog_hospital.png";
-
 const Home = () => {
   return (
-    <>
+    <div
+      style={{
+        backgroundColor: "red",
+      }}
+    >
+      <div style={{ padding: "50px 0px" }}>
+        <h1>DOGGY DOGGY</h1>
+        <Typography>하지나</Typography>
+      </div>
       <MenuList />
-    </>
+    </div>
   );
 };
 
