@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import DogImage from "src/images/dog.png";
 import DogCallendar from "src/images/dog_callendar.png";
 import DogHospital from "src/images/dog_hospital.png";
+import Pharmacy from "src/images/pharmacy.png";
 
 const MenuList = () => {
   const [isXs, setIsXs] = useState(window.innerWidth < 600);
@@ -26,7 +27,7 @@ const MenuList = () => {
     { title: "애완견 진단", img: DogImage },
     { title: "예약 일정", img: DogCallendar },
     { title: "주변 병원", img: DogHospital },
-    { title: "주변 약국", img: DogImage },
+    { title: "주변 약국", img: Pharmacy },
   ];
 
   console.log(menuInfos);
