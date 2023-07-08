@@ -100,7 +100,7 @@ const MenuList = () => {
                 <Box
                   sx={{
                     textAlign: "center",
-                    padding: "0px 2rem",
+                    padding: "0px 1rem",
                   }}
                 >
                   <h3>{menuInfo.title}</h3>
