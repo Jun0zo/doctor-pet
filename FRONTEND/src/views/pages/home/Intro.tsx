@@ -21,7 +21,7 @@ const Intro = () => {
     <>
       {isXs ? null : (
         <div style={{ padding: "50px 0px" }}>
-          <h1>DOGGY DOGGY</h1>
+          <h1>OKKY DOGGY</h1>
           <Typography>하지나</Typography>
         </div>
       )}
