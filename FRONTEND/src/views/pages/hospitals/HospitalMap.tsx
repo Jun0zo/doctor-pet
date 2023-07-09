@@ -10,7 +10,7 @@ const HospitalMap = () => {
       {
         <Map
           center={{ lat: 33.5563, lng: 126.79581 }} // 지도의 중심 좌표
-          style={{ width: "800px", height: "600px" }} // 지도 크기
+          style={{ width: "100%", height: "500px" }} // 지도 크기
           level={3}
         />
       }
