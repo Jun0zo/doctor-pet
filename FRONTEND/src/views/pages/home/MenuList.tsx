@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 // ** MUI Imports
 import { Card, Grid, CardHeader, CardContent, Box } from "@mui/material";
@@ -11,6 +12,7 @@ import DogHospital from "src/images/dog_hospital.png";
 import Pharmacy from "src/images/pharmacy.png";
 
 const MenuList = () => {
+  const router = useRouter();
   const [isXs, setIsXs] = useState(window.innerWidth < 600);
 
   useEffect(() => {
@@ -30,21 +32,25 @@ const MenuList = () => {
       title: "애완견 진단",
       img: DogImage,
       describe: "자신의 애완견을 AI를 통해 진단해보세요",
+      link: "/diagnostic",
     },
     {
       title: "예약 일정",
       img: DogCallendar,
       describe: "애완견의 예약 일정을 확인해보세요",
+      link: "/",
     },
     {
       title: "주변 병원",
       img: DogHospital,
       describe: "주변에 어떤 병원이 있는지 알아볼까요?",
+      link: "/hospitals",
     },
     {
       title: "주변 약국",
       img: Pharmacy,
       describe: "주변에 어떤 약국이 있는지 알아볼까요?",
+      link: "/hospitals",
     },
   ];
 
@@ -69,6 +75,9 @@ const MenuList = () => {
                   "&:hover": {
                     transform: "scale(1.1)",
                   },
+                }}
+                onClick={() => {
+                  router.push(menuInfo.link);
                 }}
               >
                 <CardContent sx={{ padding: "1.25rm", display: "flex" }}>
@@ -98,6 +107,9 @@ const MenuList = () => {
                   "&:hover": {
                     transform: "scale(1.1)",
                   },
+                }}
+                onClick={() => {
+                  router.push(menuInfo.link);
                 }}
               >
                 <CardContent>
