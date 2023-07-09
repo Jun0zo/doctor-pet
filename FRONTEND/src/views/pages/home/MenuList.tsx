@@ -49,71 +49,77 @@ const MenuList = () => {
   console.log(menuInfos);
 
   return (
-    <Grid container spacing={10}>
-      {menuInfos.map((menuInfo) => (
-        <Grid item md={3} sm={6} xs={12}>
-          {isXs ? (
-            <Card
-              sx={{
-                textAlign: "center",
-                borderRadius: "30px",
-                transition: "transform 0.3s",
-                cursor: "pointer",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            >
-              <CardContent sx={{ padding: "1.25rm", display: "flex" }}>
-                <Box>
-                  <img src={menuInfo.img.src} width="100px" />
-                </Box>
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    padding: "0px 2rem",
-                  }}
-                >
-                  <h3>{menuInfo.title}</h3>
-                  <Typography sx={{ textAlign: "left" }}>
-                    {menuInfo.describe}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card
-              sx={{
-                textAlign: "center",
-                borderRadius: "2rem",
-                transition: "transform 0.3s",
-                cursor: "pointer",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                },
-              }}
-            >
-              <CardContent>
-                <Box>
-                  <img src={menuInfo.img.src} width="150px" />
-                </Box>
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    padding: "0px 1rem",
-                  }}
-                >
-                  <h3>{menuInfo.title}</h3>
-                  <Typography sx={{ textAlign: "left" }}>
-                    {menuInfo.describe}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          )}
-        </Grid>
-      ))}
-    </Grid>
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <Grid
+        container
+        spacing={10}
+        sx={{ padding: "50px 20px", maxWidth: "1400px" }}
+      >
+        {menuInfos.map((menuInfo) => (
+          <Grid item md={3} sm={6} xs={12}>
+            {isXs ? (
+              <Card
+                sx={{
+                  textAlign: "center",
+                  borderRadius: "30px",
+                  transition: "transform 0.3s",
+                  cursor: "pointer",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                  },
+                }}
+              >
+                <CardContent sx={{ padding: "1.25rm", display: "flex" }}>
+                  <Box>
+                    <img src={menuInfo.img.src} width="100px" />
+                  </Box>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      padding: "0px 2rem",
+                    }}
+                  >
+                    <h3>{menuInfo.title}</h3>
+                    <Typography sx={{ textAlign: "left" }}>
+                      {menuInfo.describe}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card
+                sx={{
+                  textAlign: "center",
+                  borderRadius: "2rem",
+                  transition: "transform 0.3s",
+                  cursor: "pointer",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                  },
+                }}
+              >
+                <CardContent>
+                  <Box>
+                    <img src={menuInfo.img.src} width="150px" />
+                  </Box>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      padding: "0px 1rem",
+                    }}
+                  >
+                    <h3>{menuInfo.title}</h3>
+                    <Typography sx={{ textAlign: "left" }}>
+                      {menuInfo.describe}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            )}
+          </Grid>
+        ))}
+      </Grid>
+    </div>
   );
 };
 
