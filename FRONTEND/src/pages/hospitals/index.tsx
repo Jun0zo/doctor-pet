@@ -8,7 +8,18 @@ import HospitalTable from "src/views/pages/hospitals/HospitalTable";
 
 const Hospitals = () => {
   //   let kakao = window["kakao"];
+  useEffect(() => {
+    const { geolocation } = navigator;
 
+    if (!geolocation) {
+      // setError("Geolocation is not supported.");
+      return;
+    }
+
+    geolocation.getCurrentPosition((a) => {
+      alert(a);
+    });
+  }, []);
   return (
     <div style={{}}>
       {/* <Intro /> */}

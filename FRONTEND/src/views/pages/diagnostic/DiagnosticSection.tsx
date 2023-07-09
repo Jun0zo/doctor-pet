@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 
 // ** MUI Imports
-import Typography from "@mui/material/Typography";
-import { Box, Button, Card, CardContent } from "@mui/material";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
@@ -13,9 +12,15 @@ import DogImage from "src/images/dog.png";
 interface DCardProps {
   question: string;
   selections: Array<string>;
+
+  handleNextCard: () => void;
 }
 
-const DCard: React.FC<DCardProps> = ({ question, selections }) => {
+const DCard: React.FC<DCardProps> = ({
+  question,
+  selections,
+  handleNextCard,
+}) => {
   return (
     <Box
       sx={{
@@ -29,9 +34,16 @@ const DCard: React.FC<DCardProps> = ({ question, selections }) => {
       <Box>
         <img src={DogImage.src} style={{ width: "300px" }} alt="Dog" />
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", gap: 5 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 5,
+          marginTop: "2rem",
+        }}
+      >
         {selections.map((selection, index) => (
-          <Button key={index} variant="contained">
+          <Button key={index} variant="contained" onClick={handleNextCard}>
             {selection}
           </Button>
         ))}
@@ -41,12 +53,19 @@ const DCard: React.FC<DCardProps> = ({ question, selections }) => {
 };
 
 interface CardSlidesProps {
-  data: { question: string; selections: Array<string> }[];
+  data: {
+    question: string;
+    selections: Array<string>;
+  }[];
+  visibleCardIndex: number;
+  setVisibleCardIndex: Dispatch<SetStateAction<number>>;
 }
 
-const CardSlides: React.FC<CardSlidesProps> = ({ data }) => {
-  const [visibleCardIndex, setVisibleCardIndex] = useState(0);
-
+const CardSlides: React.FC<CardSlidesProps> = ({
+  data,
+  visibleCardIndex,
+  setVisibleCardIndex,
+}) => {
   const handleNextCard = () => {
     setVisibleCardIndex((prevIndex) => (prevIndex + 1) % data.length);
   };
@@ -65,6 +84,7 @@ const CardSlides: React.FC<CardSlidesProps> = ({ data }) => {
             key={index}
             question={info.question}
             selections={info.selections}
+            handleNextCard={handleNextCard}
           />
         ))}
       </Box>
@@ -73,6 +93,8 @@ const CardSlides: React.FC<CardSlidesProps> = ({ data }) => {
 };
 
 const DiagnosticSection: React.FC = () => {
+  const [visibleCardIndex, setVisibleCardIndex] = useState(0);
+
   const data = [
     { question: "A질병", selections: ["선택1", "선택2"] },
     { question: "B질병", selections: ["선택1", "선택2"] },
@@ -89,9 +111,11 @@ const DiagnosticSection: React.FC = () => {
         height: "100vh",
       }}
     >
-      <Box sx={{ width: "300px", marginBottom: "12px" }}>
-        abc
-        <ProgressBar value={50} />
+      <Box sx={{ width: "350px", marginBottom: "12px" }}>
+        <Typography variant="h6" textAlign="center" mb="1rem">
+          {visibleCardIndex + 1}/{data.length} 완료
+        </Typography>
+        <ProgressBar value={((visibleCardIndex + 1) / data.length) * 100} />
       </Box>
       <Card sx={{ borderRadius: "30px" }}>
         <CardContent
@@ -99,20 +123,30 @@ const DiagnosticSection: React.FC = () => {
             padding: "30px",
           }}
         >
-          <CardSlides data={data} />
+          <CardSlides
+            data={data}
+            visibleCardIndex={visibleCardIndex}
+            setVisibleCardIndex={setVisibleCardIndex}
+          />
         </CardContent>
       </Card>
 
       <Box
         sx={{
+          width: "350px",
           marginTop: "50px",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           gap: 5,
         }}
       >
-        <Button>홈으로</Button>
-        <Button>이전으로</Button>
+        <Button variant="contained" color="error">
+          홈으로
+        </Button>
+        <Button variant="contained" color="success">
+          이전으로
+        </Button>
       </Box>
     </div>
   );
