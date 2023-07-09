@@ -1,45 +1,54 @@
 // ** React Import
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from "react";
 
 // ** Type Import
-import { LayoutProps } from 'src/@core/layouts/types'
+import { LayoutProps } from "src/@core/layouts/types";
 
 // ** Layout Components
-import VerticalLayout from './VerticalLayout'
-import HorizontalLayout from './HorizontalLayout'
+import VerticalLayout from "./VerticalLayout";
+import HorizontalLayout from "./HorizontalLayout";
 
 const Layout = (props: LayoutProps) => {
   // ** Props
-  const { hidden, children, settings, saveSettings } = props
+  const { hidden, children, settings, saveSettings } = props;
 
   // ** Ref
-  const isCollapsed = useRef(settings.navCollapsed)
+  const isCollapsed = useRef(settings.navCollapsed);
 
   useEffect(() => {
     if (hidden) {
       if (settings.navCollapsed) {
-        saveSettings({ ...settings, navCollapsed: false, layout: 'vertical' })
-        isCollapsed.current = true
+        saveSettings({ ...settings, navCollapsed: false, layout: "vertical" });
+        isCollapsed.current = true;
       }
     } else {
       if (isCollapsed.current) {
-        saveSettings({ ...settings, navCollapsed: true, layout: settings.lastLayout })
-        isCollapsed.current = false
+        saveSettings({
+          ...settings,
+          navCollapsed: true,
+          layout: settings.lastLayout,
+        });
+        isCollapsed.current = false;
       } else {
         if (settings.lastLayout !== settings.layout) {
-          saveSettings({ ...settings, layout: settings.lastLayout })
+          saveSettings({ ...settings, layout: settings.lastLayout });
         }
       }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hidden])
+  }, [hidden]);
 
-  if (settings.layout === 'horizontal') {
-    return <HorizontalLayout {...props}>{children}</HorizontalLayout>
+  if (settings.layout === "horizontal") {
+    return <HorizontalLayout {...props}>{children}</HorizontalLayout>;
   }
 
-  return <VerticalLayout {...props}>{children}</VerticalLayout>
-}
+  // return <VerticalLayout {...props}>{children}</VerticalLayout>;
+  return (
+    <div style={{ backgroundColor: "#e2e2e2", minHeight: "100vh" }}>
+      {children}
+    </div>
+  );
+};
 
-export default Layout
+export default Layout;
