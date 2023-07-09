@@ -31,6 +31,12 @@ class CustomDocument extends Document {
             href="/images/apple-touch-icon.png"
           />
           <link rel="shortcut icon" href="/images/favicon.svg" />
+          <style>{`
+          ol, ul {
+            list-style:none;
+            padding:0px
+          }
+          `}</style>
         </Head>
         <body>
           <script
