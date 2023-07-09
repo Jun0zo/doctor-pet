@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 // ** MUI Imports
 import { Card, Grid, CardHeader, CardContent, Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
+
+// ** Image Imports
 import DogImage from "src/images/dog.png";
 import DogCallendar from "src/images/dog_callendar.png";
 import DogHospital from "src/images/dog_hospital.png";
@@ -55,8 +57,8 @@ const MenuList = () => {
         spacing={10}
         sx={{ padding: "50px 20px", maxWidth: "1400px" }}
       >
-        {menuInfos.map((menuInfo) => (
-          <Grid item md={3} sm={6} xs={12}>
+        {menuInfos.map((menuInfo, idx) => (
+          <Grid item md={3} sm={6} xs={12} key={idx}>
             {isXs ? (
               <Card
                 sx={{
