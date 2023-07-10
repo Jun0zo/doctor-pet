@@ -1,49 +1,30 @@
-## 👉 base stage
-FROM node:16-alpine AS base
+# Use an official Node.js runtime as a parent image
+FROM node:14-alpine
 
+# Set the working directory inside the container
 WORKDIR /app
 
-RUN apk add --no-cache g++ git curl make python3 libc6-compat
+# Copy the package.json and package-lock.json files
+COPY package*.json ./
 
+# Install the dependencies
+RUN npm install
 
-## 👉 dependencies stage
-FROM base as dependencies
+# Copy key.pem and csr.pem
+# COPY key.pem cert.pem /app/
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* ./
-
-RUN yarn install
-
-
-## 👉 build stage
-FROM base AS builder
-
+# Copy the rest of the application files
 COPY . .
 
-COPY --from=dependencies /app/node_modules ./node_modules
+# Set the environment variable to specify the API URL
+# ENV REACT_APP_API_URL=https://fastapi:8000
 
-RUN yarn build
+# Build the application
+RUN npm run build
 
+# Expose the port that the app will listen on
+EXPOSE 3000
 
-## 👉 production stage
-FROM base AS production
+# Serve the application using serve
 
-ENV NODE_ENV production
-
-COPY --from=builder /app/package.json ./package.json
-
-COPY --from=dependencies /app/node_modules ./node_modules
-
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./next.config.js
-
-
-EXPOSE 13000
-
-ENV PORT 13000
-
-HEALTHCHECK --interval=30s --timeout=20s --retries=3 --start-period=15s \
-  CMD curl -fSs 127.0.0.1:13000 || exit 1
-
-CMD ["yarn", "start"]
+CMD ["npm", "run", "start"]

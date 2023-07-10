@@ -33,7 +33,7 @@ export type UserDataTypeWithoutSecures = {
 
 export type AuthValuesType = {
   loading: boolean
-  logout: (alertSessionExpired?: boolean) => void
+  logout: () => void
   user: UserDataType | null
   setLoading: (value: boolean) => void
   setUser: (value: UserDataType | null) => void

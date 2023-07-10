@@ -1,43 +1,27 @@
-import { ReactNode, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import Spinner from 'src/@core/components/spinner'
-import BlankLayout from 'src/@core/layouts/BlankLayout'
-import { Box, Button, Container } from '@mui/material'
+// ** React Imports
+import { useEffect } from "react";
 
-const HomeComponent = () => {
-  const router = useRouter()
+// ** Next Imports
+import { useRouter } from "next/router";
 
-  return (
-    <Container style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-      메인 페이지입니다.
-      <Box component='span'>
-        <Button onClick={() => router.push('/inquiry')}>도입문의</Button>
-        <Button onClick={() => router.push('/home')}>로그인</Button>
-      </Box>
-    </Container>
-  )
-}
+// ** Spinner Import
+import Spinner from "src/@core/components/spinner";
 
 const Home = () => {
-  const router = useRouter()
+  // ** Hooks
+  const router = useRouter();
 
   useEffect(() => {
     if (!router.isReady) {
-      return
+      return;
     }
 
-    const homeRoute = '/home'
-    router.replace(homeRoute)
-  }, [router, router.isReady])
+    router.replace("/home");
 
-  if (!router.isReady) {
-    return <Spinner />
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return <HomeComponent />
-}
+  return <Spinner />;
+};
 
-export default Home
-
-Home.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
-Home.authGuard = false
+export default Home;
