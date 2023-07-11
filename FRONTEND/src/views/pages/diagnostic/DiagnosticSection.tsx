@@ -31,7 +31,6 @@ import DogImage from "src/images/dog.png";
 import LoadingImage from "src/images/ai-eye.gif";
 
 // ** Third Party
-import { FileUploader } from "react-drag-drop-files";
 
 const CaptureContent = () => {
   // return <WebcamSnapshot />;

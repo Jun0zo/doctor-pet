@@ -51,7 +51,7 @@ const Detail = ({ diagnosticResults }: Prop) => {
           </li>
         ))}
       </ul>
-      <Button>돌아가기</Button>
+      
     </div>
   );
 };
@@ -61,13 +61,12 @@ const Preview = ({ diagnosticResults }: Prop) => {
     <div>
       <img src={Success.src} height={"150px"} width={"150px"} />
       <Typography variant="h6">모두 정상입니다!</Typography>
-      <Button>자세히 보기</Button>
     </div>
   );
 };
 
 const ImageSearchResult = ({ diagnosticResults }: Prop) => {
-  const [detailed, setDetailed] = useState<boolean>(true);
+  const [detailed, setDetailed] = useState<boolean>(false);
 
   return (
     <Box
@@ -81,10 +80,19 @@ const ImageSearchResult = ({ diagnosticResults }: Prop) => {
       }}
     >
       {detailed ? (
-        <Detail diagnosticResults={diagnosticResults} />
+        <>
+          <Detail diagnosticResults={diagnosticResults} />
+          <Button onClick={() => {setDetailed(false)}}>돌아가기</Button>
+        </>
+        
       ) : (
-        <Preview diagnosticResults={diagnosticResults} />
+        <>
+          <Preview diagnosticResults={diagnosticResults} />
+          <Button onClick={() => {setDetailed(true)}}>자세히 보기</Button>
+        </>
+        
       )}
+      
     </Box>
   );
 };
