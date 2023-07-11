@@ -1,105 +1,83 @@
-import React, { useState, Dispatch, SetStateAction } from "react";
+import React, {
+  useState,
+  Dispatch,
+  SetStateAction,
+  useRef,
+  useEffect,
+} from "react";
 
 // ** MUI Imports
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Fade,
+} from "@mui/material";
+
+// ** View Imports
+import ImageSearchResult from "./ImageSearchResult";
 
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
+import DragDropFile from "src/views/pages/diagnostic/DragDropFile";
+
+// ** Types Imports
+import diagnositcResultType from "src/@types/diagnositcResult";
 
 // ** Image Imports
 import DogImage from "src/images/dog.png";
+import LoadingImage from "src/images/ai-eye.gif";
 
-interface DCardProps {
-  question: string;
-  selections: Array<string>;
+// ** Third Party
+import { FileUploader } from "react-drag-drop-files";
 
-  handleNextCard: () => void;
-}
-
-const DCard: React.FC<DCardProps> = ({
-  question,
-  selections,
-  handleNextCard,
-}) => {
-  return (
-    <Box
-      sx={{
-        width: "400px",
-        textAlign: "center",
-        transition: "transform 0.3s ease-in-out",
-        transform: "translateX(0)",
-      }}
-    >
-      <Typography variant="h5">{question}</Typography>
-      <Box>
-        <img src={DogImage.src} style={{ width: "300px" }} alt="Dog" />
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 5,
-          marginTop: "2rem",
-        }}
-      >
-        {selections.map((selection, index) => (
-          <Button key={index} variant="contained" onClick={handleNextCard}>
-            {selection}
-          </Button>
-        ))}
-      </Box>
-    </Box>
-  );
+const CaptureContent = () => {
+  // return <WebcamSnapshot />;
+  // return <DragDropFile />;
 };
 
-interface CardSlidesProps {
-  data: {
-    question: string;
-    selections: Array<string>;
-  }[];
-  visibleCardIndex: number;
-  setVisibleCardIndex: Dispatch<SetStateAction<number>>;
-}
+const DiagnosticSection = () => {
+  const [visibleCardIndex, setVisibleCardIndex] = useState(0);
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [diagnosticResults, setDiagnositcResults] = useState<
+    Array<diagnositcResultType>
+  >([]);
 
-const CardSlides: React.FC<CardSlidesProps> = ({
-  data,
-  visibleCardIndex,
-  setVisibleCardIndex,
-}) => {
-  const handleNextCard = () => {
-    setVisibleCardIndex((prevIndex) => (prevIndex + 1) % data.length);
+  useEffect(() => {
+    setStep(1);
+  }, []);
+
+  const fetchImages = (_files: File[]) => {
+    let diagnositcResult: diagnositcResultType[] = [];
+    if (_files && _files.length > 0) {
+      const files = Array.from(_files) as File[];
+
+      diagnositcResult = files.map((file) => {
+        // conver to imageURLs
+        const imageUrl = URL.createObjectURL(file);
+
+        // fetch
+        const result = "ok";
+
+        return { imageUrl, result };
+      });
+    }
+    return diagnositcResult;
   };
 
-  return (
-    <div style={{ width: "300px", overflow: "hidden" }}>
-      <Box
-        sx={{
-          display: "flex",
-          transform: `translateX(-${visibleCardIndex * 300}px)`,
-          transition: "transform 0.3s ease-in-out",
-        }}
-      >
-        {data.map((info, index) => (
-          <DCard
-            key={index}
-            question={info.question}
-            selections={info.selections}
-            handleNextCard={handleNextCard}
-          />
-        ))}
-      </Box>
-    </div>
-  );
-};
-
-const DiagnosticSection: React.FC = () => {
-  const [visibleCardIndex, setVisibleCardIndex] = useState(0);
-
-  const data = [
-    { question: "A질병", selections: ["선택1", "선택2"] },
-    { question: "B질병", selections: ["선택1", "선택2"] },
-    { question: "C질병", selections: ["선택1", "선택2"] },
-  ];
+  const requestFile = (files: any) => {
+    setLoading(true);
+    setStep(2);
+    setTimeout(() => {
+      setLoading(false);
+      const results: diagnositcResultType[] = fetchImages(files);
+      setDiagnositcResults(results);
+    }, 5000);
+  };
 
   return (
     <div
@@ -111,42 +89,56 @@ const DiagnosticSection: React.FC = () => {
         height: "100vh",
       }}
     >
-      <Box sx={{ width: "350px", marginBottom: "12px" }}>
-        <Typography variant="h6" textAlign="center" mb="1rem">
-          {visibleCardIndex + 1}/{data.length} 완료
-        </Typography>
-        <ProgressBar value={((visibleCardIndex + 1) / data.length) * 100} />
-      </Box>
-      <Card sx={{ borderRadius: "30px" }}>
-        <CardContent
+      <Box sx={{ width: "300px" }}>
+        <Card sx={{ borderRadius: "30px" }}>
+          <CardContent
+            sx={{
+              padding: "30px",
+              height: "300px",
+            }}
+          >
+            {step === 1 && (
+              <Fade in={step === 1} timeout={2000}>
+                <Box sx={{ height: "100%" }}>
+                  <DragDropFile
+                    handleRequestFile={requestFile}
+                    setFiles={setFiles}
+                  />
+                </Box>
+              </Fade>
+            )}
+            {step === 2 &&
+              (loading ? (
+                <Fade in={step === 2 && loading} timeout={2000}>
+                  <Box sx={{ height: "100%", backgroundColor: "blue" }}>
+                    <img src={LoadingImage.src} height={"100%"} />
+                  </Box>
+                </Fade>
+              ) : (
+                <Fade in={step === 2 && !loading} timeout={2000}>
+                  <ImageSearchResult diagnosticResults={diagnosticResults} />
+                </Fade>
+              ))}
+          </CardContent>
+        </Card>
+
+        <Box
           sx={{
-            padding: "30px",
+            width: "100%",
+            marginTop: "50px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 5,
           }}
         >
-          <CardSlides
-            data={data}
-            visibleCardIndex={visibleCardIndex}
-            setVisibleCardIndex={setVisibleCardIndex}
-          />
-        </CardContent>
-      </Card>
-
-      <Box
-        sx={{
-          width: "350px",
-          marginTop: "50px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: 5,
-        }}
-      >
-        <Button variant="contained" color="error">
-          홈으로
-        </Button>
-        <Button variant="contained" color="success">
+          <Button variant="contained" color="error">
+            홈으로
+          </Button>
+          {/* <Button variant="contained" color="success">
           이전으로
-        </Button>
+        </Button> */}
+        </Box>
       </Box>
     </div>
   );
