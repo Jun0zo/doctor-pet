@@ -97,12 +97,12 @@ export type SidebarLeftType = {
 export type AddEventSidebarType = {
   calendarApi: any;
   drawerWidth: number;
-  dispatch: Dispatch<any>;
+  // dispatch: Dispatch<any>;
   store: CalendarStoreType;
   addEventSidebarOpen: boolean;
   deleteEvent: (id: number) => void;
   addEvent: (event: AddEventType) => void;
   updateEvent: (event: EventType) => void;
   handleAddEventSidebarToggle: () => void;
-  handleSelectEvent: (event: null | EventType) => void;
+  // handleSelectEvent: (event: null | EventType) => void;
 };
