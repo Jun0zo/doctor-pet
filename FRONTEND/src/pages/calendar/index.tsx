@@ -13,11 +13,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSettings } from "src/@core/hooks/useSettings";
 
 // ** Types
-import { CalendarColors, CalendarFiltersType } from "src/@types/calendarTypes";
+import {
+  CalendarColors,
+  CalendarFiltersType,
+  EventType,
+} from "src/@types/calendarTypes";
 
 // ** FullCalendar & App Components Imports
 import Calendar from "src/views/pages/calendar/Calendar";
-// import SidebarLeft from "src/views/pages/calendar/SidebarLeft";
+import SidebarLeft from "src/views/pages/calendar/SidebarLeft";
 import CalendarWrapper from "src/@core/styles/libs/fullcalendar";
 import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
@@ -30,12 +34,25 @@ const calendarsColor: CalendarColors = {
   ETC: "info",
 };
 
+const addEvent = () => {
+  console.log("add!");
+};
+const updateEvent = () => {
+  console.log("update!");
+};
+const deleteEvent = () => {
+  console.log("delete!");
+};
+
 const AppCalendar = () => {
   // ** States
   const [calendarApi, setCalendarApi] = useState<null | any>(null);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(false);
   const [addEventSidebarOpen, setAddEventSidebarOpen] =
     useState<boolean>(false);
+
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
+  const [selectedCalendars, setSelectedCalendars] = useState<string[]>([]);
 
   // ** Hooks
   const { settings } = useSettings();
@@ -50,10 +67,13 @@ const AppCalendar = () => {
   //     dispatch(fetchEvents(store.selectedCalendars as CalendarFiltersType[]))
   //   }, [dispatch, store.selectedCalendars])
 
+  //   const handleSelect() => {}
+
   const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen);
 
-  const handleAddEventSidebarToggle = () =>
+  const handleAddEventSidebarToggle = () => {
     setAddEventSidebarOpen(!addEventSidebarOpen);
+  };
 
   const store = {
     events: [
@@ -74,16 +94,25 @@ const AppCalendar = () => {
   };
 
   return (
-    <CalendarWrapper
-      className="app-calendar"
+    <Box
       sx={{
-        boxShadow: skin === "bordered" ? 0 : 6,
-        ...(skin === "bordered" && {
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-        }),
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
       }}
     >
-      {/* <SidebarLeft
+      <Box sx={{ maxWidth: "800px" }}>
+        <CalendarWrapper
+          className="app-calendar"
+          sx={{
+            boxShadow: skin === "bordered" ? 0 : 6,
+            ...(skin === "bordered" && {
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+            }),
+          }}
+        >
+          {/* <SidebarLeft
         store={store}
         mdAbove={mdAbove}
         // dispatch={dispatch}
@@ -96,45 +125,47 @@ const AppCalendar = () => {
         handleLeftSidebarToggle={handleLeftSidebarToggle}
         handleAddEventSidebarToggle={handleAddEventSidebarToggle}
       /> */}
-      <Box
-        sx={{
-          p: 5,
-          pb: 0,
-          flexGrow: 1,
-          borderRadius: 1,
-          boxShadow: "none",
-          backgroundColor: "background.paper",
-          ...(mdAbove
-            ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
-            : {}),
-        }}
-      >
-        <Calendar
-          store={store}
-          //   dispatch={dispatch}
-          direction={direction}
-          // updateEvent={updateEvent}
-          calendarApi={calendarApi}
-          calendarsColor={calendarsColor}
-          setCalendarApi={setCalendarApi}
-          //   handleSelectEvent={handleSelectEvent}
-          handleLeftSidebarToggle={handleLeftSidebarToggle}
-          handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-        />
+          <Box
+            sx={{
+              p: 5,
+              pb: 0,
+              flexGrow: 1,
+              borderRadius: 1,
+              boxShadow: "none",
+              backgroundColor: "background.paper",
+              ...(mdAbove
+                ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+                : {}),
+            }}
+          >
+            <Calendar
+              store={store}
+              //   dispatch={dispatch}
+              direction={direction}
+              // updateEvent={updateEvent}
+              calendarApi={calendarApi}
+              calendarsColor={calendarsColor}
+              setCalendarApi={setCalendarApi}
+              // handleSelectEvent={handleSelectEvent}
+              handleLeftSidebarToggle={handleLeftSidebarToggle}
+              handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+            />
+          </Box>
+          <AddEventSidebar
+            store={store}
+            // dispatch={dispatch}
+            addEvent={addEvent}
+            updateEvent={updateEvent}
+            deleteEvent={deleteEvent}
+            calendarApi={calendarApi}
+            drawerWidth={addEventSidebarWidth}
+            // handleSelectEvent={handleSelectEvent}
+            addEventSidebarOpen={addEventSidebarOpen}
+            handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+          />
+        </CalendarWrapper>
       </Box>
-      {/* <AddEventSidebar
-        // store={store}
-        // dispatch={dispatch}
-        // addEvent={addEvent}
-        // updateEvent={updateEvent}
-        // deleteEvent={deleteEvent}
-        calendarApi={calendarApi}
-        drawerWidth={addEventSidebarWidth}
-        // handleSelectEvent={handleSelectEvent}
-        addEventSidebarOpen={addEventSidebarOpen}
-        handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-      /> */}
-    </CalendarWrapper>
+    </Box>
   );
 };
 

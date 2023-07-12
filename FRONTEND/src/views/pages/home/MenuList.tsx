@@ -38,7 +38,7 @@ const MenuList = () => {
       title: "예약 일정",
       img: DogCallendar,
       describe: "애완견의 예약 일정을 확인해보세요",
-      link: "/",
+      link: "/calendar",
     },
     {
       title: "주변 병원",
@@ -53,8 +53,6 @@ const MenuList = () => {
       link: "/hospitals",
     },
   ];
-
-  console.log(menuInfos);
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>

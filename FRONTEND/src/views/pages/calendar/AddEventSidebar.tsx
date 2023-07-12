@@ -64,13 +64,13 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
   // ** Props
   const {
     store,
-    dispatch,
+    // dispatch,
     addEvent,
     updateEvent,
     drawerWidth,
     calendarApi,
     deleteEvent,
-    handleSelectEvent,
+    // handleSelectEvent,
     addEventSidebarOpen,
     handleAddEventSidebarToggle,
   } = props;
@@ -89,7 +89,7 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
   const handleSidebarClose = async () => {
     setValues(defaultState);
     clearErrors();
-    dispatch(handleSelectEvent(null));
+    // dispatch(handleSelectEvent(null))
     handleAddEventSidebarToggle();
   };
 
@@ -112,9 +112,9 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
       store.selectedEvent === null ||
       (store.selectedEvent !== null && !store.selectedEvent.title.length)
     ) {
-      dispatch(addEvent(modifiedEvent));
+      // dispatch(addEvent(modifiedEvent))
     } else {
-      dispatch(updateEvent({ id: store.selectedEvent.id, ...modifiedEvent }));
+      // dispatch(updateEvent({ id: store.selectedEvent.id, ...modifiedEvent }))
     }
     calendarApi.refetchEvents();
     handleSidebarClose();
@@ -122,7 +122,7 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
 
   const handleDeleteEvent = () => {
     if (store.selectedEvent) {
-      dispatch(deleteEvent(store.selectedEvent.id));
+      // dispatch(deleteEvent(store.selectedEvent.id))
     }
 
     // calendarApi.getEventById(store.selectedEvent.id).remove()
