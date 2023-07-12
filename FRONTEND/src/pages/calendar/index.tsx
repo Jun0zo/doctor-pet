@@ -27,11 +27,8 @@ import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
-  Personal: "error",
-  Business: "primary",
-  Family: "warning",
-  Holiday: "success",
-  ETC: "info",
+  Diagnostic: "error",
+  Reservation: "secondary",
 };
 
 const addEvent = () => {
@@ -78,19 +75,17 @@ const AppCalendar = () => {
   const store = {
     events: [
       {
-        id: 1,
-        url: "",
+        // id: 1,
+        // url: "",
         title: "Design Review",
-        start: new Date(),
-        end: new Date(),
-        allDay: false,
+        date: new Date(),
         extendedProps: {
-          calendar: "Business",
+          calendar: "Diagnostic",
         },
       },
     ],
     selectedEvent: null,
-    selectedCalendars: ["Business"],
+    selectedCalendars: ["Diagnostic", "Reservation"],
   };
 
   return (

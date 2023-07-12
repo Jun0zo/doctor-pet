@@ -36,28 +36,30 @@ interface PickerProps {
 }
 
 interface DefaultStateType {
-  url: string;
+  // url: string;
   title: string;
-  allDay: boolean;
+  // allDay: boolean;
   calendar: string;
-  description: string;
-  endDate: Date | string;
-  startDate: Date | string;
-  guests: string[] | string | undefined;
+  // description: string;
+  // endDate: Date | string;
+  // startDate: Date | string;
+  date: Date | string;
+  // guests: string[] | string | undefined;
 }
 
 const capitalize = (string: string) =>
   string && string[0].toUpperCase() + string.slice(1);
 
 const defaultState: DefaultStateType = {
-  url: "",
+  // url: "",
   title: "",
-  guests: [],
-  allDay: true,
-  description: "",
-  endDate: new Date(),
+  // guests: [],
+  // allDay: true,
+  // description: "",
+  // endDate: new Date(),
   calendar: "Business",
-  startDate: new Date(),
+  // startDate: new Date(),
+  date: new Date(),
 };
 
 const AddEventSidebar = (props: AddEventSidebarType) => {
@@ -95,17 +97,18 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
 
   const onSubmit = (data: { title: string }) => {
     const modifiedEvent = {
-      url: values.url,
+      // url: values.url,
       display: "block",
       title: data.title,
-      end: values.endDate,
-      allDay: values.allDay,
-      start: values.startDate,
+      // end: values.endDate,
+      // allDay: values.allDay,
+      // start: values.startDate,
+      date: values.date,
       extendedProps: {
         calendar: capitalize(values.calendar),
-        guests:
-          values.guests && values.guests.length ? values.guests : undefined,
-        description: values.description.length ? values.description : undefined,
+        // guests:
+        //   values.guests && values.guests.length ? values.guests : undefined,
+        // description: values.description.length ? values.description : undefined,
       },
     };
     if (
@@ -129,29 +132,30 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
     handleSidebarClose();
   };
 
-  const handleStartDate = (date: Date) => {
-    if (date > values.endDate) {
-      setValues({
-        ...values,
-        startDate: new Date(date),
-        endDate: new Date(date),
-      });
-    }
-  };
+  // const handleStartDate = (date: Date) => {
+  //   if (date > values.endDate) {
+  //     setValues({
+  //       ...values,
+  //       startDate: new Date(date),
+  //       endDate: new Date(date),
+  //     });
+  //   }
+  // };
 
   const resetToStoredValues = useCallback(() => {
     if (store.selectedEvent !== null) {
       const event = store.selectedEvent;
       setValue("title", event.title || "");
       setValues({
-        url: event.url || "",
+        // url: event.url || "",
         title: event.title || "",
-        allDay: event.allDay,
-        guests: event.extendedProps.guests || [],
-        description: event.extendedProps.description || "",
-        calendar: event.extendedProps.calendar || "Business",
-        endDate: event.end !== null ? event.end : event.start,
-        startDate: event.start !== null ? event.start : new Date(),
+        // allDay: event.allDay,
+        // guests: event.extendedProps.guests || [],
+        // description: event.extendedProps.description || "",
+        calendar: event.extendedProps.calendar || "Diagnostic",
+        // endDate: event.end !== null ? event.end : event.start,
+        // startDate: event.start !== null ? event.start : new Date(),
+        date: event.date !== null ? event.date : event.date,
       });
     }
   }, [setValue, store.selectedEvent]);
@@ -306,14 +310,11 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
                   setValues({ ...values, calendar: e.target.value })
                 }
               >
-                <MenuItem value="Personal">Personal</MenuItem>
-                <MenuItem value="Business">Business</MenuItem>
-                <MenuItem value="Family">Family</MenuItem>
-                <MenuItem value="Holiday">Holiday</MenuItem>
-                <MenuItem value="ETC">ETC</MenuItem>
+                <MenuItem value="Diagnostic">Diagnostic</MenuItem>
+                <MenuItem value="Reservation">Reservation</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{ mb: 6 }}>
+            {/* <Box sx={{ mb: 6 }}>
               <DatePicker
                 selectsStart
                 id="event-start-date"
@@ -333,8 +334,8 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
                 }
                 onSelect={handleStartDate}
               />
-            </Box>
-            <Box sx={{ mb: 6 }}>
+            </Box> */}
+            {/* <Box sx={{ mb: 6 }}>
               <DatePicker
                 selectsEnd
                 id="event-end-date"
@@ -351,8 +352,8 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
                   setValues({ ...values, endDate: new Date(date) })
                 }
               />
-            </Box>
-            <FormControl sx={{ mb: 6 }}>
+            </Box> */}
+            {/* <FormControl sx={{ mb: 6 }}>
               <FormControlLabel
                 label="All Day"
                 control={
@@ -364,8 +365,8 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
                   />
                 }
               />
-            </FormControl>
-            <TextField
+            </FormControl> */}
+            {/* <TextField
               fullWidth
               type="url"
               id="event-url"
@@ -373,8 +374,8 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
               label="Event URL"
               value={values.url}
               onChange={(e) => setValues({ ...values, url: e.target.value })}
-            />
-            <FormControl fullWidth sx={{ mb: 6 }}>
+            /> */}
+            {/* <FormControl fullWidth sx={{ mb: 6 }}>
               <InputLabel id="event-guests">Guests</InputLabel>
               <Select
                 multiple
@@ -392,8 +393,8 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
                 <MenuItem value="john">John</MenuItem>
                 <MenuItem value="barry">Barry</MenuItem>
               </Select>
-            </FormControl>
-            <TextField
+            </FormControl> */}
+            {/* <TextField
               rows={4}
               multiline
               fullWidth
@@ -404,7 +405,7 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
               onChange={(e) =>
                 setValues({ ...values, description: e.target.value })
               }
-            />
+            /> */}
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <RenderSidebarFooter />
             </Box>
