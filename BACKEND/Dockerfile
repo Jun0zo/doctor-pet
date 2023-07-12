@@ -9,6 +9,7 @@ COPY requirements.txt .
 
 # 의존성 설치
 RUN pip install --no-cache-dir -r requirements.txt
+RUN apk add --no-cache mesa-dri-gallium
 
 # 앱 소스 코드 복사
 COPY . .

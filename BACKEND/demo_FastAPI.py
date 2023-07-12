@@ -4,7 +4,7 @@ import time
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
-
+import io
 from config.yolof_config import yolof_config
 from dataset.coco import coco_class_index, coco_class_labels, COCODataset
 from dataset.transforms import ValTransforms
@@ -105,7 +105,7 @@ def run(image_file):
     # ------------------------- 이미지 ----------------------------
     if mode == 'image':
         # image = cv2.imread(file_location, cv2.IMREAD_COLOR)
-        image = Image.open(image_file).convert('RGB')
+        image = Image.open(io.BytesIO(image_file)).convert('RGB')
         image = np.array(image)
         orig_h, orig_w, _ = image.shape
         orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
@@ -138,9 +138,9 @@ def run(image_file):
                                   vis_thresh=cfg['test_score_thresh'])
 
         # cv2.imshow('detection', img_processed)
-        save_filename = os.path.join(save_path, os.path.basename(file_location).replace('.jpg', '_result.jpg'))
-        cv2.imwrite(save_filename, img_processed)
-        print(f"결과 이미지 저장됨: {save_filename}")
+        # save_filename = os.path.join(save_path, os.path.basename(file_location).replace('.jpg', '_result.jpg'))
+        # cv2.imwrite(save_filename, img_processed)
+        # print(f"결과 이미지 저장됨: {save_filename}")
         print(mess)
         
     return img_processed, mess
