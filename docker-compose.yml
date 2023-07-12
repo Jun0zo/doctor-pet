@@ -1,6 +1,11 @@
 version: "3"
 services:
+  # fastapi:
+  #   build: ./BACKEND
+  #   ports:
+  #     - 8000:8000
   next:
     build: ./FRONTEND
     ports:
       - 3000:3000
+  
