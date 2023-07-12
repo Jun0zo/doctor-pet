@@ -54,8 +54,6 @@ const MenuList = () => {
     },
   ];
 
-  console.log(menuInfos);
-
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Grid

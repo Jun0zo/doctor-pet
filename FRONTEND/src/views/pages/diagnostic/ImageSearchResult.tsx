@@ -21,6 +21,8 @@ type Prop = {
 };
 
 const Detail = ({ diagnosticResults }: Prop) => {
+  const [isHovering, setIsHovering] = useState(0);
+
   useEffect(() => {
     console.log(diagnosticResults);
   }, [diagnosticResults]);
@@ -34,24 +36,30 @@ const Detail = ({ diagnosticResults }: Prop) => {
         justifyContent: "space-around",
       }}
     >
-      <ul>
+      <ul style={{ overflowY: "scroll", height: "80%" }}>
         {diagnosticResults.map((diagnosticResult: diagnositcResultType) => (
-          <li>
+          <li
+            onMouseOver={() => setIsHovering(1)}
+            onMouseOut={() => setIsHovering(0)}
+            style={
+              isHovering ? { backgroundColor: "gray", cursor: "pointer" } : {}
+            }
+          >
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
+                alignItems: "center",
                 width: "100%",
               }}
             >
-              <img src={diagnosticResult.imageUrl} alt="" width="30px" />
-              <div>dfs</div>
+              <img src={diagnosticResult.imageUrl} alt="" width="100px" />
+              <Typography variant="h6">{diagnosticResult.result}</Typography>
             </Box>
           </li>
         ))}
       </ul>
-      
     </div>
   );
 };
@@ -82,17 +90,26 @@ const ImageSearchResult = ({ diagnosticResults }: Prop) => {
       {detailed ? (
         <>
           <Detail diagnosticResults={diagnosticResults} />
-          <Button onClick={() => {setDetailed(false)}}>돌아가기</Button>
+          <Button
+            onClick={() => {
+              setDetailed(false);
+            }}
+          >
+            돌아가기
+          </Button>
         </>
-        
       ) : (
         <>
           <Preview diagnosticResults={diagnosticResults} />
-          <Button onClick={() => {setDetailed(true)}}>자세히 보기</Button>
+          <Button
+            onClick={() => {
+              setDetailed(true);
+            }}
+          >
+            자세히 보기
+          </Button>
         </>
-        
       )}
-      
     </Box>
   );
 };
