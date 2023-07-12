@@ -1,24 +1,42 @@
 from fastapi import FastAPI
-from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Dict
 from demo_FastAPI import run
 import base64
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
+origins = [
+    # 허용할 출처를 여기에 추가해주세요
+    "http://localhost",
+    "http://localhost:3000",
+    "http://220.68.27.149",
+    "http://220.68.27.149:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/upload")
 
-async def upload_image(image_files: List[str]):
+
+async def upload_image(image_files: Dict[str, List[str]]):
     
     files = []
-    for image in image_files:
+    for image in image_files["encoded_images"]:
         files.append(base64.b64decode(image.encode("utf-8")))
         
     results = []
     
     for file in files:
         result = {}
-        mess, img_processed = run(file)
+        img_processed, mess = run(file)
         output = mess.split(":")
         base64_contents = base64.b64encode(img_processed).decode("utf-8")
         
