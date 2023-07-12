@@ -16,11 +16,11 @@ import {
   Typography,
   Fade,
   IconButton,
-  Stack
+  Stack,
 } from "@mui/material";
 
 // ** Icons Imports
-import PinDropIcon from '@mui/icons-material/PinDrop';
+import PinDropIcon from "@mui/icons-material/PinDrop";
 
 // ** View Imports
 import ImageSearchResult from "./ImageSearchResult";
@@ -41,7 +41,7 @@ import SearchLoadingImage from "src/images/search.gif";
 import Success from "src/images/success.gif";
 
 // ** Third Party
-import axios from 'axios';
+import axios from "axios";
 
 const CaptureContent = () => {
   // return <WebcamSnapshot />;
@@ -53,7 +53,7 @@ const convertToBase64 = (file: File): Promise<string> => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result as string;
-      const base64 = base64String.split(',')[1];
+      const base64 = base64String.split(",")[1];
       resolve(base64);
     };
     reader.onerror = (error) => {
@@ -64,23 +64,24 @@ const convertToBase64 = (file: File): Promise<string> => {
 };
 
 const sendImage = (base64: string): Promise<string> => {
-  const url = 'YOUR_ENDPOINT_URL'; // Replace with your actual endpoint URL
+  const url = "YOUR_ENDPOINT_URL"; // Replace with your actual endpoint URL
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
   const data = {
     image: base64,
   };
 
-  return axios.post(url, data, config)
-    .then(response => {
+  return axios
+    .post(url, data, config)
+    .then((response) => {
       return response.data.result;
     })
-    .catch(error => {
-      console.error('Error sending image:', error);
-      return 'error';
+    .catch((error) => {
+      console.error("Error sending image:", error);
+      return "error";
     });
 };
 
@@ -105,7 +106,7 @@ const DiagnosticSection = () => {
   const [] = useState();
 
   useEffect(() => {
-    setStep(5);
+    setStep(1);
     // gps loading
   }, []);
 
@@ -114,41 +115,46 @@ const DiagnosticSection = () => {
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
-      const base64Results = [] 
+      const base64Results = [];
       for (const file of files) {
         // Convert to Base64
         const base64 = await convertToBase64(file);
-        base64Results.push(base64)
+        base64Results.push(base64);
         // diagnositcResult.push({ imageUrl: base64, result });
       }
 
       // const result = await sendImage(base64Results);
 
-      axios.post('/upload', {image: base64Results}, {headers: {
-        'Content-Type': 'application/json',
-      },})
-        .then(response => {
-          response.data.result.map((result:diagnositcResultType)  => {
-              
-              const decodedString = atob(result.image);
-              const url = decodeURIComponent(decodedString);
-              result.image
-            }
-          )
+      axios
+        .post(
+          "http://220.68.27.149:8000/upload",
+          { encoded_images: base64Results },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          response.data.result.map((result: diagnositcResultType) => {
+            const decodedString = atob(result.image);
+            const url = decodeURIComponent(decodedString);
+            result.image;
+          });
           setDiagnositcResults(response.data.result);
         })
-        .catch(error => {
-          console.error('Error sending image:', error);
-          return 'error';
+        .catch((error) => {
+          console.error("Error sending image:", error);
+          return "error";
         });
-      }
+    }
     return diagnositcResult;
   };
 
   const requestFile = async (files: any) => {
     setLoading(true);
     setStep(2);
-    setTimeout(async() => {
+    setTimeout(async () => {
       setLoading(false);
       const results: diagnositcResultType[] = await fetchImages(files);
       setDiagnositcResults(results);
@@ -191,7 +197,6 @@ const DiagnosticSection = () => {
     // return [randomHospital, reservationDate];
 
     setTimeout(() => {
-      
       setLoading(false);
       setHospitalSearchResult({
         hospitalName: selectedHospital,
@@ -284,15 +289,19 @@ const DiagnosticSection = () => {
                 </Fade>
               ) : (
                 <Fade in={step === 5 && !loading} timeout={2000}>
-                  <Box sx={{display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: "30px",
-                          height: "100%",}}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "30px",
+                      height: "100%",
+                    }}
+                  >
                     <img src={Success.src} height={"150px"} width={"150px"} />
                     <Typography variant="h5">예약을 완료했어요!</Typography>
-                    
+
                     <Stack direction="row" spacing={1}>
                       <IconButton aria-label="delete">
                         <PinDropIcon />
@@ -304,20 +313,23 @@ const DiagnosticSection = () => {
                   </Box>
                 </Fade>
               ))}
-              {step === 6 &&
-              (
-                <Fade in={step === 6} timeout={2000}>
-                  <Box sx={{display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: "30px",
-                          height: "100%",}}>
-                    <img src={Success.src} height={"150px"} width={"150px"} />
-                    <Typography variant="h5">캘린더에 저장할까요?</Typography>
-                  </Box>
-                </Fade>
-              )}
+            {step === 6 && (
+              <Fade in={step === 6} timeout={2000}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "30px",
+                    height: "100%",
+                  }}
+                >
+                  <img src={Success.src} height={"150px"} width={"150px"} />
+                  <Typography variant="h5">캘린더에 저장할까요?</Typography>
+                </Box>
+              </Fade>
+            )}
           </CardContent>
         </Card>
 
