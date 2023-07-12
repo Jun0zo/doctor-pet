@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "build:icons": "tsc -b src/iconify-bundle && node src/iconify-bundle/bundle-icons-react.js"
   },
+  "proxy": "http//localhost:8000",
   "dependencies": {
     "@casl/ability": "6.3.2",
     "@casl/react": "3.1.0",

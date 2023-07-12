@@ -54,8 +54,8 @@ const Detail = ({ diagnosticResults }: Prop) => {
                 width: "100%",
               }}
             >
-              <img src={diagnosticResult.imageUrl} alt="" width="100px" />
-              <Typography variant="h6">{diagnosticResult.result}</Typography>
+              <img src={diagnosticResult.image} alt="" width="100px" />
+              <Typography variant="h6">{diagnosticResult.disease_name}</Typography>
             </Box>
           </li>
         ))}
