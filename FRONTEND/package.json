@@ -11,6 +11,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "build:icons": "tsc -b src/iconify-bundle && node src/iconify-bundle/bundle-icons-react.js"
   },
+  "proxy": "http//localhost:8000",
   "dependencies": {
     "@casl/ability": "6.3.2",
     "@casl/react": "3.1.0",
@@ -60,6 +61,7 @@
     "react-datepicker": "4.8.0",
     "react-dom": "18.2.0",
     "react-draft-wysiwyg": "1.15.0",
+    "react-drag-drop-files": "^2.3.10",
     "react-dropzone": "14.2.3",
     "react-hook-form": "7.38.0",
     "react-hot-toast": "2.4.0",
