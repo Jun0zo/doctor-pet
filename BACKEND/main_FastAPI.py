@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Dict
 from demo_FastAPI import run
 import base64
 from fastapi.responses import JSONResponse
@@ -26,10 +26,10 @@ app.add_middleware(
 @app.post("/upload")
 
 
-async def upload_image(image_files: List[str]):
+async def upload_image(image_files: Dict[str, List[str]]):
     
     files = []
-    for image in image_files:
+    for image in image_files["encoded_images"]:
         files.append(base64.b64decode(image.encode("utf-8")))
         
     results = []
