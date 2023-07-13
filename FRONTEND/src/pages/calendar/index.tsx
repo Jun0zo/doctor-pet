@@ -65,6 +65,15 @@ const AppCalendar = () => {
           calendar: "Diagnostic",
         },
       },
+      {
+        // id: 1,
+        // url: "",
+        title: "백내장2",
+        date: new Date(),
+        extendedProps: {
+          calendar: "Reservation",
+        },
+      },
     ],
     selectedEvent: null,
     selectedCalendars: ["Diagnostic", "Reservation"],
@@ -102,17 +111,23 @@ const AppCalendar = () => {
     })
   }
 
-  
+  useEffect(() => {
+    console.log("store chagne", store)
+  }, [store])
 
   useEffect(() => {
+    console.log("first", store)
     const fetchEvents = () => {
-      axios.get('schedule').then(response => {
+      axios.get('https://220.68.27.149:8000/get').then(response => {
       // Handle successful response
       console.log('GET request successful');
       console.log(response.data);
       setStore((old:any) => {
-        old.events = response.data.events
-        return old
+        const updatedStore = { ...old };
+
+        updatedStore.events = response.data.map((info:any) => { return {type: info.type, title: info.name, date: new Date(info.time)} })
+        console.log(updatedStore)
+        return updatedStore
       })
     })}
 
