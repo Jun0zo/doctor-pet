@@ -29,6 +29,7 @@ import HospitalSearchResult from "./HospitalSearchResult";
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
 import DragDropFile from "src/views/pages/diagnostic/DragDropFile";
+import TakePicture from "src/views/pages/diagnostic/TakePicture";
 
 // ** Types Imports
 import diagnositcResultType from "src/@types/diagnositcResult";
@@ -43,10 +44,9 @@ import Success from "src/images/success.gif";
 // ** Third Party
 import axios from "axios";
 
-const CaptureContent = () => {
-  // return <WebcamSnapshot />;
-  // return <DragDropFile />;
-};
+function isMobileDevice() {
+  return /Mobi|Android/i.test(window.navigator.userAgent);
+}
 
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -100,7 +100,7 @@ const DiagnosticSection = () => {
       disease_detected: true,
       disease_name: "D1",
       disease_probability: 76.1,
-      image: "image",
+      image_url: "image",
     },
   ]);
   const [isDetected, setIsDetected] = useState<boolean>(false);
@@ -119,7 +119,6 @@ const DiagnosticSection = () => {
   }, []);
 
   const fetchImages = async (_files: File[]) => {
-    let diagnositcResult: diagnositcResultType[] = [];
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
@@ -128,11 +127,10 @@ const DiagnosticSection = () => {
         // Convert to Base64
         const base64 = await convertToBase64(file);
         base64Results.push(base64);
-        // diagnositcResult.push({ imageUrl: base64, result });
       }
 
-      // const result = await sendImage(base64Results);
 
+      alert('go')
       axios
         .post(
           "http://220.68.27.149:8000/upload",
@@ -144,19 +142,13 @@ const DiagnosticSection = () => {
           }
         )
         .then((response) => {
-          response.data.result.map((result: diagnositcResultType) => {
-            const decodedString = atob(result.image);
-            const url = decodeURIComponent(decodedString);
-            result.image;
-          });
-          // setDiagnositcResults(response.data.result);
+          setDiagnositcResults(response.data.result);
         })
         .catch((error) => {
           console.error("Error sending image:", error);
           return "error";
         });
     }
-    return diagnositcResult;
   };
 
   const requestFile = async (files: any) => {
@@ -164,8 +156,7 @@ const DiagnosticSection = () => {
     setStep(2);
     setTimeout(async () => {
       setLoading(false);
-      const results: diagnositcResultType[] = await fetchImages(files);
-      // setDiagnositcResults(results);
+      await fetchImages(files);
     }, 5000);
   };
 
@@ -258,10 +249,20 @@ const DiagnosticSection = () => {
               height: "400px",
             }}
           >
-            {step === 1 && (
+            {step === 1 && !isMobileDevice() && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
                   <DragDropFile
+                    handleRequestFile={requestFile}
+                    setFiles={setFiles}
+                  />
+                </Box>
+              </Fade>
+            )}
+            {step === 1 && isMobileDevice() && (
+              <Fade in={step === 1} timeout={2000}>
+                <Box sx={{ height: "100%" }}>
+                  <TakePicture
                     handleRequestFile={requestFile}
                     setFiles={setFiles}
                   />

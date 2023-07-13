@@ -72,6 +72,8 @@ const AppCalendar = () => {
     setAddEventSidebarOpen(!addEventSidebarOpen);
   };
 
+  const d = new Date()
+  d.setDate(14)
   const store = {
     events: [
       {
@@ -79,6 +81,15 @@ const AppCalendar = () => {
         // url: "",
         title: "Design Review",
         date: new Date(),
+        extendedProps: {
+          calendar: "Diagnostic",
+        },
+      },
+      {
+        // id: 1,
+        // url: "",
+        title: "Design Review",
+        date: d,
         extendedProps: {
           calendar: "Diagnostic",
         },

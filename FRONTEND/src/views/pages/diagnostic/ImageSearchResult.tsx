@@ -65,7 +65,7 @@ const Detail = ({ diagnosticResults }: DetailProp) => {
                   width: "100%",
                 }}
               >
-                <img src={diagnosticResult.image} alt="" width="100px" />
+                <img src={diagnosticResult.image_url} alt="" width="100px" />
                 <Typography variant="h6">
                   {diagnosticResult.disease_name}
                 </Typography>
@@ -112,7 +112,9 @@ const ImageSearchResult = ({ diagnosticResults, setIsDetected }: Prop) => {
     );
     setDetectedResults(detected);
 
-    if (diagnosticResults.length) setIsDetected(true);
+    console.log(detected.length)
+    if (detected.length) setIsDetected(true);
+    else setIsDetected(false);
   }, [diagnosticResults]);
   return (
     <Box
