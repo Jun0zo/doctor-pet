@@ -2,67 +2,47 @@ import { useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 
 const HospitalMap = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [markerIndex, setMarkerIndex] = useState(null);
 
   const markers = [
     {
-      id: 1,
-      position: { lat: 33.450701, lng: 126.570667 },
-      content: "Marker 1",
+      name: "현재위치",
+      position: { lat: 35.946968476155504, lng: 126.6814655885179 },
     },
     {
-      id: 2,
-      position: { lat: 33.455701, lng: 126.575667 },
-      content: "Marker 2",
-    },
+      name: "스마일 동물병원",
+      position: { lat: 35.962301291766344, lng: 126.69467350485549 },
+    }, //
     {
-      id: 3,
-      position: { lat: 33.460701, lng: 126.580667 },
-      content: "Marker 3",
-    },
+      name: "해맑은 동물병원",
+      position: { lat: 35.965150464556594, lng: 126.70235346000632 },
+    }, //
   ];
 
-  const handleMarkerClick = () => {
-    setIsOpen(true);
+  const handleMarkerHover = (index: any) => {
+    setMarkerIndex(index);
   };
 
-  const handleCloseClick = () => {
-    setIsOpen(false);
+  const handleMarkerLeave = () => {
+    setMarkerIndex(null);
   };
 
   return (
     <Map
-      center={{ lat: 33.450701, lng: 126.570667 }} // coordinates of the center of the map
-      style={{ width: "100%", height: "450px" }} // map size
-      level={3} // map zoom level
+      center={{ lat: 35.946968476155504, lng: 126.6814655885179 }}
+      style={{ width: "100%", height: "450px" }}
+      level={3}
     >
-      {markers.map((marker) => (
+      {markers.map((marker, index) => (
         <MapMarker
-          key={marker.id}
-          position={marker.position} // coordinates of the marker
-          clickable // Enable click event on the marker
-          onClick={handleMarkerClick}
+          key={index}
+          position={marker.position}
+          clickable
+          onMouseOver={() => handleMarkerHover(index)}
+          onMouseOut={handleMarkerLeave}
         >
-          {/* Info Window */}
-          {isOpen && (
-            <div style={{ minWidth: "150px" }}>
-              <img
-                alt="close"
-                width="14"
-                height="13"
-                src="https://t1.daumcdn.net/localimg/localimages/07/mapjsapi/2x/bt_close.gif"
-                style={{
-                  position: "absolute",
-                  right: "5px",
-                  top: "5px",
-                  cursor: "pointer",
-                }}
-                onClick={handleCloseClick}
-              />
-              <div style={{ padding: "5px", color: "#000" }}>
-                {marker.content}
-              </div>
-            </div>
+          {markerIndex === index && (
+            <div style={{ padding: "5px", color: "#000" }}>{marker.name}</div>
           )}
         </MapMarker>
       ))}
