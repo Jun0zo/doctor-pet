@@ -25,6 +25,9 @@ import SidebarLeft from "src/views/pages/calendar/SidebarLeft";
 import CalendarWrapper from "src/@core/styles/libs/fullcalendar";
 import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
+// ** Third Party
+import axios from "axios";
+
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
   Diagnostic: "error",
@@ -100,6 +103,21 @@ const AppCalendar = () => {
   }
 
   
+
+  useEffect(() => {
+    const fetchEvents = () => {
+      axios.get('schedule').then(response => {
+      // Handle successful response
+      console.log('GET request successful');
+      console.log(response.data);
+      setStore((old:any) => {
+        old.events = response.data.events
+        return old
+      })
+    })}
+
+    fetchEvents()
+  }, [])
 
   return (
     <Box
