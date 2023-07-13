@@ -129,8 +129,6 @@ const DiagnosticSection = () => {
         base64Results.push(base64);
       }
 
-
-      alert('go')
       axios
         .post(
           "http://220.68.27.149:8000/upload",
@@ -150,6 +148,30 @@ const DiagnosticSection = () => {
         });
     }
   };
+
+  const requestSchedule = () => {
+    const reqBody = [{
+      type:"Diagnostic",
+      name: diagnosticResults.map(result => result.disease_name).join(),
+      time: new Date(),
+      
+    },
+    {
+      type:"Reservation",
+      name: hospitalSearchResult.hospitalName,
+      time: hospitalSearchResult.datetime,
+    }]
+
+    axios.post('schedule', reqBody)
+      .then(response => {
+      console.log('Schedule request successful');
+      console.log(response.data);
+      })
+      .catch(error => {
+      // Handle error
+      console.error('Error in scheduling request:', error);
+    });
+  }
 
   const requestFile = async (files: any) => {
     setLoading(true);
@@ -374,7 +396,7 @@ const DiagnosticSection = () => {
                   }}
                 >
                   <img src={Success.src} height={"150px"} width={"150px"} />
-                  <Typography variant="h5">캘린더에 저장할까요?</Typography>
+                  <Typography variant="h5">일정을 캘린더에 저장했어요!</Typography>
                 </Box>
               </Fade>
             )}
@@ -468,6 +490,22 @@ const DiagnosticSection = () => {
                 }}
               >
                 예약하기
+              </Button>
+            </>
+          )}
+
+          {step === 5 && !loading && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  setLoading(true);
+                  setStep((step) => step + 1);
+                  requestSchedule();
+                }}
+              >
+                다음으로
               </Button>
             </>
           )}
