@@ -25,7 +25,6 @@ app.add_middleware(
 
 @app.post("/upload")
 
-
 async def upload_image(image_files: Dict[str, List[str]]):
     
     files = []
@@ -54,3 +53,15 @@ async def upload_image(image_files: Dict[str, List[str]]):
     final_result = {'result': results}
     
     return JSONResponse(content=final_result)
+
+information_list = []
+
+@app.post("/push") # 데이터 저장하기
+def pull_data(data: dict):
+    information_list.append(data)
+    return {"message": "Data received successfully"}
+
+@app.get("/pull") # 데이터 불러오기
+def get_data():
+    return information_list
+
