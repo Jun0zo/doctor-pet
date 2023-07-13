@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install the dependencies
+RUN npm -g install npm
 RUN npm install
 
 # Copy key.pem and csr.pem

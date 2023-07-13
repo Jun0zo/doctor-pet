@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env HTTPS=true next dev",
+    "dev": "cross-env HTTPS=true SSL_CRT_FILE=certificate.crt SSL_KEY_FILE=_wildcard.example.com-key.pem next dev",
     "build": "next build",
     "start": "next start",
     "export": "next export",
