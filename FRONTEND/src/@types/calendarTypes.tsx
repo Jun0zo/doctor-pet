@@ -14,25 +14,21 @@ export type CalendarFiltersType =
 export type EventDateType = Date | null | undefined;
 
 export type CalendarColors = {
-  ETC: ThemeColor;
-  Family: ThemeColor;
-  Holiday: ThemeColor;
-  Personal: ThemeColor;
-  Business: ThemeColor;
+  Diagnostic: "error";
+  Reservation: "secondary";
 };
 
 export type EventType = {
-  id: number;
-  url: string;
+  // id: number;
+  // url: string;
   title: string;
-  allDay: boolean;
-  end: Date | string;
-  start: Date | string;
+  // allDay: boolean;
+  date: Date | string;
   extendedProps: {
-    location?: string;
+    // location?: string;
     calendar?: string;
-    description?: string;
-    guests?: string[] | string | undefined;
+    // description?: string;
+    // guests?: string[] | string | undefined;
   };
 };
 
@@ -77,7 +73,7 @@ export type CalendarType = {
   handleLeftSidebarToggle: () => void;
   // updateEvent: (event: EventType) => void
   handleAddEventSidebarToggle: () => void;
-  // handleSelectEvent: (event: EventType) => void
+  handleSelectEvent: (event: EventType) => void
 };
 
 export type SidebarLeftType = {

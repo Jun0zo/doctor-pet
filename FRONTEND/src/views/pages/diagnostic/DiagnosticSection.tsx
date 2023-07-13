@@ -16,11 +16,11 @@ import {
   Typography,
   Fade,
   IconButton,
-  Stack
+  Stack,
 } from "@mui/material";
 
 // ** Icons Imports
-import PinDropIcon from '@mui/icons-material/PinDrop';
+import PinDropIcon from "@mui/icons-material/PinDrop";
 
 // ** View Imports
 import ImageSearchResult from "./ImageSearchResult";
@@ -29,6 +29,7 @@ import HospitalSearchResult from "./HospitalSearchResult";
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
 import DragDropFile from "src/views/pages/diagnostic/DragDropFile";
+import TakePicture from "src/views/pages/diagnostic/TakePicture";
 
 // ** Types Imports
 import diagnositcResultType from "src/@types/diagnositcResult";
@@ -41,19 +42,18 @@ import SearchLoadingImage from "src/images/search.gif";
 import Success from "src/images/success.gif";
 
 // ** Third Party
-import axios from 'axios';
+import axios from "axios";
 
-const CaptureContent = () => {
-  // return <WebcamSnapshot />;
-  // return <DragDropFile />;
-};
+function isMobileDevice() {
+  return /Mobi|Android/i.test(window.navigator.userAgent);
+}
 
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result as string;
-      const base64 = base64String.split(',')[1];
+      const base64 = base64String.split(",")[1];
       resolve(base64);
     };
     reader.onerror = (error) => {
@@ -64,23 +64,24 @@ const convertToBase64 = (file: File): Promise<string> => {
 };
 
 const sendImage = (base64: string): Promise<string> => {
-  const url = 'YOUR_ENDPOINT_URL'; // Replace with your actual endpoint URL
+  const url = "YOUR_ENDPOINT_URL"; // Replace with your actual endpoint URL
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
   const data = {
     image: base64,
   };
 
-  return axios.post(url, data, config)
-    .then(response => {
+  return axios
+    .post(url, data, config)
+    .then((response) => {
       return response.data.result;
     })
-    .catch(error => {
-      console.error('Error sending image:', error);
-      return 'error';
+    .catch((error) => {
+      console.error("Error sending image:", error);
+      return "error";
     });
 };
 
@@ -94,7 +95,15 @@ const DiagnosticSection = () => {
   const [files, setFiles] = useState([]);
   const [diagnosticResults, setDiagnositcResults] = useState<
     Array<diagnositcResultType>
-  >([]);
+  >([
+    {
+      disease_detected: true,
+      disease_name: "D1",
+      disease_probability: 76.1,
+      image_url: "image",
+    },
+  ]);
+  const [isDetected, setIsDetected] = useState<boolean>(false);
   const [hospitalSearchResult, setHospitalSearchResult] =
     useState<hospitalSearchResultType>({
       hospitalName: "",
@@ -110,16 +119,14 @@ const DiagnosticSection = () => {
   }, []);
 
   const fetchImages = async (_files: File[]) => {
-    let diagnositcResult: diagnositcResultType[] = [];
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
-      const base64Results = [] 
+      const base64Results = [];
       for (const file of files) {
         // Convert to Base64
         const base64 = await convertToBase64(file);
-        base64Results.push(base64)
-        // diagnositcResult.push({ imageUrl: base64, result });
+        base64Results.push(base64);
       }
 
       // const result = await sendImage(base64Results);
@@ -135,23 +142,56 @@ const DiagnosticSection = () => {
               result.image
             }
           )
+      axios
+        .post(
+          "http://220.68.27.149:8000/upload",
+          { encoded_images: base64Results },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
           setDiagnositcResults(response.data.result);
         })
-        .catch(error => {
-          console.error('Error sending image:', error);
-          return 'error';
+        .catch((error) => {
+          console.error("Error sending image:", error);
+          return "error";
         });
-      }
-    return diagnositcResult;
+    }
   };
+
+  const requestSchedule = () => {
+    const reqBody = [{
+      type:"Diagnostic",
+      name: diagnosticResults.map(result => result.disease_name).join(),
+      time: new Date(),
+      
+    },
+    {
+      type:"Reservation",
+      name: hospitalSearchResult.hospitalName,
+      time: hospitalSearchResult.datetime,
+    }]
+
+    axios.post('schedule', reqBody)
+      .then(response => {
+      console.log('Schedule request successful');
+      console.log(response.data);
+      })
+      .catch(error => {
+      // Handle error
+      console.error('Error in scheduling request:', error);
+    });
+  }
 
   const requestFile = async (files: any) => {
     setLoading(true);
     setStep(2);
-    setTimeout(async() => {
+    setTimeout(async () => {
       setLoading(false);
-      const results: diagnositcResultType[] = await fetchImages(files);
-      setDiagnositcResults(results);
+      await fetchImages(files);
     }, 5000);
   };
 
@@ -166,7 +206,7 @@ const DiagnosticSection = () => {
       setLoading(true);
     }
     // 병원 선택
-    const hospitals = ["A병원", "B병원", "C병원"];
+    const hospitals = ["스마일 동물병원", "해맑은 동물병원"];
     let randomIndex = Math.floor(Math.random() * hospitals.length);
     let selectedHospital = "";
     if (!fixHospital) {
@@ -191,7 +231,6 @@ const DiagnosticSection = () => {
     // return [randomHospital, reservationDate];
 
     setTimeout(() => {
-      
       setLoading(false);
       setHospitalSearchResult({
         hospitalName: selectedHospital,
@@ -218,6 +257,26 @@ const DiagnosticSection = () => {
       }}
     >
       <Box sx={{ width: "300px" }}>
+        <Box
+          sx={{
+            mb: "20px",
+            width: "100%",
+            padding: "0px 20px",
+            textAlign: "center",
+          }}
+        >
+          {isDetected ? (
+            <>
+              <Typography sx={{ mb: "10px" }}>{step} / 6</Typography>
+              <ProgressBar value={(step / 6) * 100} />
+            </>
+          ) : (
+            <>
+              <Typography sx={{ mb: "10px" }}>{step} / 3</Typography>
+              <ProgressBar value={(step / 3) * 100} />
+            </>
+          )}
+        </Box>
         <Card sx={{ borderRadius: "30px" }}>
           <CardContent
             sx={{
@@ -225,10 +284,20 @@ const DiagnosticSection = () => {
               height: "400px",
             }}
           >
-            {step === 1 && (
+            {step === 1 && !isMobileDevice() && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
                   <DragDropFile
+                    handleRequestFile={requestFile}
+                    setFiles={setFiles}
+                  />
+                </Box>
+              </Fade>
+            )}
+            {step === 1 && isMobileDevice() && (
+              <Fade in={step === 1} timeout={2000}>
+                <Box sx={{ height: "100%" }}>
+                  <TakePicture
                     handleRequestFile={requestFile}
                     setFiles={setFiles}
                   />
@@ -245,7 +314,10 @@ const DiagnosticSection = () => {
                 </Fade>
               ) : (
                 <Fade in={step === 2 && !loading} timeout={2000}>
-                  <ImageSearchResult diagnosticResults={diagnosticResults} />
+                  <ImageSearchResult
+                    diagnosticResults={diagnosticResults}
+                    setIsDetected={setIsDetected}
+                  />
                 </Fade>
               ))}
             {step === 3 && (
@@ -261,7 +333,15 @@ const DiagnosticSection = () => {
             {step === 4 &&
               (loading ? (
                 <Fade in={step === 4 && loading} timeout={2000}>
-                  <Box sx={{ height: "100%", textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <img src={SearchLoadingImage.src} width={"100%"} />
                     <Typography variant="h6">근처 병원 검색 중...</Typography>
                   </Box>
@@ -277,22 +357,34 @@ const DiagnosticSection = () => {
             {step === 5 &&
               (loading ? (
                 <Fade in={step === 5 && loading} timeout={2000}>
-                  <Box sx={{ height: "100%", textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <img src={SearchLoadingImage.src} width={"100%"} />
                     <Typography variant="h6">해당 병원 예약 중...</Typography>
                   </Box>
                 </Fade>
               ) : (
                 <Fade in={step === 5 && !loading} timeout={2000}>
-                  <Box sx={{display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: "30px",
-                          height: "100%",}}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "30px",
+                      height: "100%",
+                    }}
+                  >
                     <img src={Success.src} height={"150px"} width={"150px"} />
                     <Typography variant="h5">예약을 완료했어요!</Typography>
-                    
+
                     <Stack direction="row" spacing={1}>
                       <IconButton aria-label="delete">
                         <PinDropIcon />
@@ -304,20 +396,23 @@ const DiagnosticSection = () => {
                   </Box>
                 </Fade>
               ))}
-              {step === 6 &&
-              (
-                <Fade in={step === 6} timeout={2000}>
-                  <Box sx={{display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: "30px",
-                          height: "100%",}}>
-                    <img src={Success.src} height={"150px"} width={"150px"} />
-                    <Typography variant="h5">캘린더에 저장할까요?</Typography>
-                  </Box>
-                </Fade>
-              )}
+            {step === 6 && (
+              <Fade in={step === 6} timeout={2000}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "30px",
+                    height: "100%",
+                  }}
+                >
+                  <img src={Success.src} height={"150px"} width={"150px"} />
+                  <Typography variant="h5">일정을 캘린더에 저장했어요!</Typography>
+                </Box>
+              </Fade>
+            )}
           </CardContent>
         </Card>
 
@@ -333,25 +428,41 @@ const DiagnosticSection = () => {
         >
           {step === 2 && !loading && (
             <>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => {
-                  setLoading(true);
-                  setStep((step) => step + 1);
-                }}
-              >
-                다음으로
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                다시촬영
-              </Button>
+              {isDetected ? (
+                <>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => {
+                      setLoading(true);
+                      setStep((step) => step + 1);
+                    }}
+                  >
+                    다음으로
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
+                    다시촬영
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
+                    다시촬영
+                  </Button>
+                </>
+              )}
             </>
           )}
 
@@ -396,6 +507,22 @@ const DiagnosticSection = () => {
             </>
           )}
 
+          {step === 5 && !loading && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  setLoading(true);
+                  setStep((step) => step + 1);
+                  requestSchedule();
+                }}
+              >
+                다음으로
+              </Button>
+            </>
+          )}
+
           <Button
             variant="contained"
             color="error"
@@ -403,7 +530,7 @@ const DiagnosticSection = () => {
               router.push("/home");
             }}
           >
-            홈으로 {loading.toString()}
+            홈으로
           </Button>
         </Box>
       </Box>

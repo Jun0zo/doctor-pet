@@ -71,25 +71,27 @@ const Intro = () => {
     <>
       {isXs ? null : (
         <Box
+        sx={{
+          background:
+            "radial-gradient(circle at left, #b2feb2 5%, #b2feb2 20%, #c6f0c6 20%, #c6f0c6 35%, #daf5da 35%, #daf5da 50%, #e9f9e9 50%, #e9f9e9 65%, #f3fcf3 65%, #f3fcf3 80%, #ffffff 80%, #ffffff 100%)",
+          backgroundPosition: "letf center",
+          height: "400px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        <Box
           sx={{
-            backgroundColor: "#b2feb2",
-            height: "400px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            alignItems: "center",
-            position: "relative",
+            padding: "100px 0px",
+            maxWidth: "1200px",
+            width: "100%",
+            margin: "0 auto",
+            
           }}
-        >
-          <Box
-            sx={{
-              padding: "100px 0px",
-              maxWidth: "1200px",
-              width: "100%",
-              margin: "0 auto",
-            }}
-          >
-            <Box>
+        ><Box>
               <Typography variant="h2">OKKY DOGGY</Typography>
               <Typography variant="h5" mt={3}>
                 사진 한 장으로 강아지를 지켜주세요!

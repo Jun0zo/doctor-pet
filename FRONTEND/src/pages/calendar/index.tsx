@@ -27,11 +27,8 @@ import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
-  Personal: "error",
-  Business: "primary",
-  Family: "warning",
-  Holiday: "success",
-  ETC: "info",
+  Diagnostic: "error",
+  Reservation: "secondary",
 };
 
 const addEvent = () => {
@@ -54,6 +51,23 @@ const AppCalendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [selectedCalendars, setSelectedCalendars] = useState<string[]>([]);
 
+  const [store, setStore] = useState<any>({
+    events: [
+      {
+        // id: 1,
+        // url: "",
+        title: "백내장",
+        date: new Date(),
+        extendedProps: {
+          calendar: "Diagnostic",
+        },
+      },
+    ],
+    selectedEvent: null,
+    selectedCalendars: ["Diagnostic", "Reservation"],
+  })
+
+
   // ** Hooks
   const { settings } = useSettings();
 
@@ -72,26 +86,20 @@ const AppCalendar = () => {
   const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen);
 
   const handleAddEventSidebarToggle = () => {
+    console.log(store)
     setAddEventSidebarOpen(!addEventSidebarOpen);
   };
 
-  const store = {
-    events: [
-      {
-        id: 1,
-        url: "",
-        title: "Design Review",
-        start: new Date(),
-        end: new Date(),
-        allDay: false,
-        extendedProps: {
-          calendar: "Business",
-        },
-      },
-    ],
-    selectedEvent: null,
-    selectedCalendars: ["Business"],
-  };
+  const handleSelectEvent = (newEvent: EventType) => {
+    console.log(newEvent)
+
+    setStore((old:any) => {
+      old.selectedEvent = newEvent;
+      return old
+    })
+  }
+
+  
 
   return (
     <Box
@@ -112,19 +120,6 @@ const AppCalendar = () => {
             }),
           }}
         >
-          {/* <SidebarLeft
-        store={store}
-        mdAbove={mdAbove}
-        // dispatch={dispatch}
-        calendarsColor={calendarsColor}
-        leftSidebarOpen={leftSidebarOpen}
-        leftSidebarWidth={leftSidebarWidth}
-        // handleSelectEvent={handleSelectEvent}
-        // handleAllCalendars={handleAllCalendars}
-        // handleCalendarsUpdate={handleCalendarsUpdate}
-        handleLeftSidebarToggle={handleLeftSidebarToggle}
-        handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-      /> */}
           <Box
             sx={{
               p: 5,
@@ -146,7 +141,7 @@ const AppCalendar = () => {
               calendarApi={calendarApi}
               calendarsColor={calendarsColor}
               setCalendarApi={setCalendarApi}
-              // handleSelectEvent={handleSelectEvent}
+              handleSelectEvent={handleSelectEvent}
               handleLeftSidebarToggle={handleLeftSidebarToggle}
               handleAddEventSidebarToggle={handleAddEventSidebarToggle}
             />
