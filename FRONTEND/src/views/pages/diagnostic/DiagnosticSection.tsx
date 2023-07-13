@@ -144,7 +144,7 @@ const DiagnosticSection = () => {
           )
       axios
         .post(
-          "http://220.68.27.149:8000/upload",
+          "https://220.68.27.149:8000/upload",
           { encoded_images: base64Results },
           {
             headers: {
@@ -175,7 +175,7 @@ const DiagnosticSection = () => {
       time: hospitalSearchResult.datetime,
     }]
 
-    axios.post('schedule', reqBody)
+    axios.post('https://220.68.27.149:8000/schedule', reqBody)
       .then(response => {
       console.log('Schedule request successful');
       console.log(response.data);
