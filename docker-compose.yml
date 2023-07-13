@@ -7,5 +7,5 @@ services:
   next:
     build: ./FRONTEND
     ports:
-      - 3000:3000
+      - 443:3000
   
