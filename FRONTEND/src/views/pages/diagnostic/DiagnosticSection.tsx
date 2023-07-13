@@ -95,7 +95,15 @@ const DiagnosticSection = () => {
   const [files, setFiles] = useState([]);
   const [diagnosticResults, setDiagnositcResults] = useState<
     Array<diagnositcResultType>
-  >([]);
+  >([
+    {
+      disease_detected: true,
+      disease_name: "D1",
+      disease_probability: 76.1,
+      image: "image",
+    },
+  ]);
+  const [isDetected, setIsDetected] = useState<boolean>(false);
   const [hospitalSearchResult, setHospitalSearchResult] =
     useState<hospitalSearchResultType>({
       hospitalName: "",
@@ -141,7 +149,7 @@ const DiagnosticSection = () => {
             const url = decodeURIComponent(decodedString);
             result.image;
           });
-          setDiagnositcResults(response.data.result);
+          // setDiagnositcResults(response.data.result);
         })
         .catch((error) => {
           console.error("Error sending image:", error);
@@ -157,7 +165,7 @@ const DiagnosticSection = () => {
     setTimeout(async () => {
       setLoading(false);
       const results: diagnositcResultType[] = await fetchImages(files);
-      setDiagnositcResults(results);
+      // setDiagnositcResults(results);
     }, 5000);
   };
 
@@ -172,7 +180,7 @@ const DiagnosticSection = () => {
       setLoading(true);
     }
     // 병원 선택
-    const hospitals = ["A병원", "B병원", "C병원"];
+    const hospitals = ["스마일 동물병원", "해맑은 동물병원"];
     let randomIndex = Math.floor(Math.random() * hospitals.length);
     let selectedHospital = "";
     if (!fixHospital) {
@@ -223,6 +231,26 @@ const DiagnosticSection = () => {
       }}
     >
       <Box sx={{ width: "300px" }}>
+        <Box
+          sx={{
+            mb: "20px",
+            width: "100%",
+            padding: "0px 20px",
+            textAlign: "center",
+          }}
+        >
+          {isDetected ? (
+            <>
+              <Typography sx={{ mb: "10px" }}>{step} / 6</Typography>
+              <ProgressBar value={(step / 6) * 100} />
+            </>
+          ) : (
+            <>
+              <Typography sx={{ mb: "10px" }}>{step} / 3</Typography>
+              <ProgressBar value={(step / 3) * 100} />
+            </>
+          )}
+        </Box>
         <Card sx={{ borderRadius: "30px" }}>
           <CardContent
             sx={{
@@ -250,7 +278,10 @@ const DiagnosticSection = () => {
                 </Fade>
               ) : (
                 <Fade in={step === 2 && !loading} timeout={2000}>
-                  <ImageSearchResult diagnosticResults={diagnosticResults} />
+                  <ImageSearchResult
+                    diagnosticResults={diagnosticResults}
+                    setIsDetected={setIsDetected}
+                  />
                 </Fade>
               ))}
             {step === 3 && (
@@ -266,7 +297,15 @@ const DiagnosticSection = () => {
             {step === 4 &&
               (loading ? (
                 <Fade in={step === 4 && loading} timeout={2000}>
-                  <Box sx={{ height: "100%", textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <img src={SearchLoadingImage.src} width={"100%"} />
                     <Typography variant="h6">근처 병원 검색 중...</Typography>
                   </Box>
@@ -282,7 +321,15 @@ const DiagnosticSection = () => {
             {step === 5 &&
               (loading ? (
                 <Fade in={step === 5 && loading} timeout={2000}>
-                  <Box sx={{ height: "100%", textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      height: "100%",
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <img src={SearchLoadingImage.src} width={"100%"} />
                     <Typography variant="h6">해당 병원 예약 중...</Typography>
                   </Box>
@@ -345,25 +392,41 @@ const DiagnosticSection = () => {
         >
           {step === 2 && !loading && (
             <>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => {
-                  setLoading(true);
-                  setStep((step) => step + 1);
-                }}
-              >
-                다음으로
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                다시촬영
-              </Button>
+              {isDetected ? (
+                <>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={() => {
+                      setLoading(true);
+                      setStep((step) => step + 1);
+                    }}
+                  >
+                    다음으로
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
+                    다시촬영
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
+                    다시촬영
+                  </Button>
+                </>
+              )}
             </>
           )}
 
@@ -415,7 +478,7 @@ const DiagnosticSection = () => {
               router.push("/home");
             }}
           >
-            홈으로 {loading.toString()}
+            홈으로
           </Button>
         </Box>
       </Box>

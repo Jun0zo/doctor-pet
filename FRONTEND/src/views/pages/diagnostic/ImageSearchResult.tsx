@@ -18,9 +18,19 @@ import Fail from "src/images/fail.gif";
 
 type Prop = {
   diagnosticResults: Array<diagnositcResultType>;
+  setIsDetected: Dispatch<SetStateAction<boolean>>;
 };
 
-const Detail = ({ diagnosticResults }: Prop) => {
+type PreviewProp = {
+  diagnosticResults: Array<diagnositcResultType>;
+  totalLength: number;
+};
+
+type DetailProp = {
+  diagnosticResults: Array<diagnositcResultType>;
+};
+
+const Detail = ({ diagnosticResults }: DetailProp) => {
   const [isHovering, setIsHovering] = useState(0);
 
   useEffect(() => {
@@ -37,45 +47,73 @@ const Detail = ({ diagnosticResults }: Prop) => {
       }}
     >
       <ul style={{ overflowY: "scroll", height: "80%" }}>
-        {diagnosticResults.map((diagnosticResult: diagnositcResultType) => (
-          <li
-            onMouseOver={() => setIsHovering(1)}
-            onMouseOut={() => setIsHovering(0)}
-            style={
-              isHovering ? { backgroundColor: "gray", cursor: "pointer" } : {}
-            }
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-              }}
+        {diagnosticResults.map((diagnosticResult: diagnositcResultType) =>
+          diagnosticResult.disease_detected ? (
+            <li
+              onMouseOver={() => setIsHovering(1)}
+              onMouseOut={() => setIsHovering(0)}
+              style={
+                isHovering ? { backgroundColor: "gray", cursor: "pointer" } : {}
+              }
             >
-              <img src={diagnosticResult.image} alt="" width="100px" />
-              <Typography variant="h6">{diagnosticResult.disease_name}</Typography>
-            </Box>
-          </li>
-        ))}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <img src={diagnosticResult.image} alt="" width="100px" />
+                <Typography variant="h6">
+                  {diagnosticResult.disease_name}
+                </Typography>
+              </Box>
+            </li>
+          ) : null
+        )}
       </ul>
     </div>
   );
 };
 
-const Preview = ({ diagnosticResults }: Prop) => {
+const Preview = ({ diagnosticResults, totalLength }: PreviewProp) => {
   return (
     <div>
-      <img src={Success.src} height={"150px"} width={"150px"} />
-      <Typography variant="h6">모두 정상입니다!</Typography>
+      {diagnosticResults.length === 0 ? (
+        <>
+          <img src={Success.src} height={"150px"} width={"150px"} />
+          <Typography variant="h6">모두 정상입니다!</Typography>
+        </>
+      ) : (
+        <Box sx={{ textAlign: "center" }}>
+          <img src={Fail.src} height={"150px"} width={"150px"} />
+          <Typography variant="h6">
+            {totalLength} 중 {diagnosticResults.length}개의 사진에서 질병이
+            검출되었습니다!
+          </Typography>
+        </Box>
+      )}
     </div>
   );
 };
 
-const ImageSearchResult = ({ diagnosticResults }: Prop) => {
+const ImageSearchResult = ({ diagnosticResults, setIsDetected }: Prop) => {
   const [detailed, setDetailed] = useState<boolean>(false);
+  const [detectedResults, setDetectedResults] = useState<
+    diagnositcResultType[]
+  >([]);
 
+  useEffect(() => {
+    console.log(diagnosticResults);
+    const detected = diagnosticResults.filter(
+      (result: diagnositcResultType) => result.disease_detected
+    );
+    setDetectedResults(detected);
+
+    if (diagnosticResults.length) setIsDetected(true);
+  }, [diagnosticResults]);
   return (
     <Box
       sx={{
@@ -89,7 +127,7 @@ const ImageSearchResult = ({ diagnosticResults }: Prop) => {
     >
       {detailed ? (
         <>
-          <Detail diagnosticResults={diagnosticResults} />
+          <Detail diagnosticResults={detectedResults} />
           <Button
             onClick={() => {
               setDetailed(false);
@@ -100,14 +138,19 @@ const ImageSearchResult = ({ diagnosticResults }: Prop) => {
         </>
       ) : (
         <>
-          <Preview diagnosticResults={diagnosticResults} />
-          <Button
-            onClick={() => {
-              setDetailed(true);
-            }}
-          >
-            자세히 보기
-          </Button>
+          <Preview
+            diagnosticResults={detectedResults}
+            totalLength={diagnosticResults.length}
+          />
+          {detectedResults.length ? (
+            <Button
+              onClick={() => {
+                setDetailed(true);
+              }}
+            >
+              자세히 보기
+            </Button>
+          ) : null}
         </>
       )}
     </Box>
