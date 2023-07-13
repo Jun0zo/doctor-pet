@@ -105,7 +105,7 @@ const DiagnosticSection = () => {
   const [] = useState();
 
   useEffect(() => {
-    setStep(5);
+    setStep(1);
     // gps loading
   }, []);
 
@@ -124,7 +124,7 @@ const DiagnosticSection = () => {
 
       // const result = await sendImage(base64Results);
 
-      axios.post('/upload', {image: base64Results}, {headers: {
+      axios.post('http://220.68.27.149:8000/upload', {image: base64Results}, {headers: {
         'Content-Type': 'application/json',
       },})
         .then(response => {

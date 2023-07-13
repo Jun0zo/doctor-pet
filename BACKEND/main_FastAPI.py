@@ -7,13 +7,22 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import hashlib
 from datetime import datetime
+import cv2
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from tinydb import TinyDB, Query
+from pydantic import BaseModel
 
 app = FastAPI()
+
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 origins = [
     # 허용할 출처를 여기에 추가해주세요
     "*"
 ]
+
+app.add_middleware(HTTPSRedirectMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,14 +37,15 @@ app.add_middleware(
 
 
 async def upload_image(image_files: Dict[str, List[str]]):
-    
+    #file_path = os.path.join(directory, file_name)
     files = []
 
     for image in image_files["encoded_images"]:
         files.append(base64.b64decode(image.encode("utf-8")))
-        
+
     results = []
     
+
     for file in files:
         result = {}
         img_processed, mess = run(file)
@@ -45,9 +55,9 @@ async def upload_image(image_files: Dict[str, List[str]]):
         current_time = datetime.now().strftime("%Y%m%d%H%M%S%f")
         hash_value = hashlib.md5(current_time.encode()).hexdigest()
 
-        file_name = f"static/{hash_value}.jpg"
-        with open(file_name, "wb") as f:
-            f.write(img_processed)
+        # with open(file_name, "wb") as f:
+        #     f.write(img_processed)
+        cv2.imwrite(f"static/{hash_value}.jpg", img_processed)
 
         if output[0] == '정상':
             result["disease_detected"] = False
@@ -57,21 +67,31 @@ async def upload_image(image_files: Dict[str, List[str]]):
             result["disease_detected"] = True
             result["disease_name"] = output[0]
             result["disease_probability"] = float(output[1])
-            result["image_url"] = f"/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/static/{hash_value}.jpg"
+            result["image_url"] = f"static/{hash_value}.jpg"
         results.append(result)
         
     final_result = {'result': results}
     
     return JSONResponse(content=final_result)
 
-information_list = []
+db = TinyDB('data_db.json')
+data_table = db.table('data')
 
-@app.post("/push") # 데이터 저장하기
-def pull_data(data: dict):
-    information_list.append(data)
-    return {"message": "Data received successfully"}
+@app.post("/save_data")
+async def save_data(request: Request, json_data: List[dict]):
+    client_ip = request.client.host
+    json_data = await request.json()
 
-@app.get("/pull") # 데이터 불러오기
-def get_data():
-    return information_list
+    data_table.insert({'ip': client_ip, 'data': json_data})
 
+    return {"message": f"Data saved for IP: {client_ip}"}
+
+@app.get("/get_data/{client_ip}")
+def get_data(client_ip: str):
+    Data = Query()
+    result = data_table.search(Data.ip == client_ip)
+
+    if result:
+        return result[0]['data']
+    else:
+        return {"message": "No data available for the provided IP"}

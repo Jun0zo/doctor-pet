@@ -15,7 +15,7 @@ from models.detector import build_model
 
 #한글깨짐 방지
 from PIL import ImageFont, ImageDraw, Image
-font = ImageFont.truetype('font/MaruBuri-Bold.ttf', 16)
+font = ImageFont.truetype('/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/font/MaruBuri-Bold.ttf', 16)
 
 
 def parse_args():
@@ -30,11 +30,11 @@ def parse_args():
                         type=str, help='Use the data from image, video or camera')
     parser.add_argument('--cuda',  default=True,
                         help='Use cuda')
-    parser.add_argument('--path_to_img', default='coco/COCO/val2017/',
+    parser.add_argument('--path_to_img', default='/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/test/',
                         type=str, help='The path to image files') 
     parser.add_argument('--path_to_vid', default='data/demo/videos/',
                         type=str, help='The path to video files')
-    parser.add_argument('--path_to_save', default='det_results/images/',
+    parser.add_argument('--path_to_save', default='/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/det_results/images/image',
                         type=str, help='The path to save the detection results')
     parser.add_argument('--path_to_saveVid', default='data/videos/result.avi',
                         type=str, help='The path to save the detection results video')
@@ -42,7 +42,7 @@ def parse_args():
     # model
     parser.add_argument('-v', '--version', default='yolof50', type=str,
                         help='build yolof')
-    parser.add_argument('--weight', default='weights/coco/yolof50/yolof50_epoch_50_67.64.pth', # 
+    parser.add_argument('--weight', default='/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/weights/coco/yolof50/yolof50_epoch_50_67.64.pth', # 
                         type=str, help='Trained state_dict file path to open')
     parser.add_argument('--topk', default=100, type=int,
                         help='NMS threshold')
@@ -75,17 +75,17 @@ def visualize(img, bboxes, scores, cls_inds, class_colors, vis_thresh=0.3):
             cls_id = coco_class_index[int(cls_inds[i])]
             mess = '%s: %.2f' % (coco_class_labels[cls_id], scores[i])
             img = plot_bbox_labels(img, bbox, mess, cls_color, test_scale=ts) 
-
+    
+    print(mess)
     return img
 
 def detect(net, 
            device, 
            transform, 
            vis_thresh, 
-           mode='image', 
-           path_to_img=None, 
-           path_to_vid=None, 
-           path_to_save=None):
+           mode='image.jpg', 
+           path_to_img='/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/test/IMG_D_A1_000001.jpg', 
+           path_to_save='/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/det_results/images/'):
     # class color
     np.random.seed(0)
     class_colors = [(np.random.randint(255),
@@ -127,13 +127,17 @@ def detect(net,
                                       cls_inds=cls_inds,
                                       class_colors=class_colors,
                                       vis_thresh=vis_thresh)
+            # file_name = "image.jpg"
+            # file_path = os.path.join(save_path, file_name)
+            # with open(file_path, "wb") as f:
+            #     f.write(img_processed)
 
             # cv2.imshow('detection', img_processed)
             cv2.imwrite(os.path.join(save_path, path_to_img.split('/')[-1].replace('.jpg', '_result.jpg')), img_processed)
             # cv2.waitKey(0)
 
 
-def run(file_location):
+def run():
     args = parse_args()
     # cuda
     if args.cuda:
@@ -174,8 +178,7 @@ def run(file_location):
             device=device,
             transform=transform,
             mode=args.mode,
-            path_to_img=file_location, # 저장된 이미지 파일을 demo, 'IMG_D_A6_203174.jpg'
-            path_to_vid=args.path_to_vid,
+            path_to_img=args.path_to_img + 'image.jpg', # 저장된 이미지 파일을 demo, 'IMG_D_A6_203174.jpg'
             path_to_save=args.path_to_save,
             vis_thresh=cfg['test_score_thresh'])
 
