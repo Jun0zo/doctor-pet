@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict
 from demo_FastAPI import run
@@ -72,24 +72,28 @@ async def upload_image(image_files: Dict[str, List[str]]):
     
     return JSONResponse(content=final_result)
 
-db = TinyDB('data_db.json')
-data_table = db.table('data')
+# TinyDB 인스턴스 생성
+db = TinyDB('db.json')
 
-@app.post("/save_data")
-async def save_data(request: Request, json_data: List[dict]):
-    client_ip = request.client.host
-    json_data = await request.json()
+# TinyDB 테이블 생성
+#table = db.table('items')
 
-    data_table.insert({'ip': client_ip, 'data': json_data})
+@app.post("/schedule")
+def create_items(items: list[dict], request: Request):
+    user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
 
-    return {"message": f"Data saved for IP: {client_ip}"}
+    # 사용자 IP 주소를 키로 사용하여 데이터 저장
+    table = db.table(user_ip)
+    table.insert_multiple(items)
 
-@app.get("/get_data/{client_ip}")
-def get_data(client_ip: str):
-    Data = Query()
-    result = data_table.search(Data.ip == client_ip)
+    return {"success!"}
 
-    if result:
-        return result[0]['data']
-    else:
-        return {"message": "No data available for the provided IP"}
+@app.get("/get")
+def get_schedule(request: Request):
+    user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
+
+    # 사용자 IP 주소를 키로 사용하여 데이터 조회
+    table = db.table(user_ip)
+    items = table.all()
+
+    return items
