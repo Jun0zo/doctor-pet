@@ -9,10 +9,7 @@ app = FastAPI()
 
 origins = [
     # 허용할 출처를 여기에 추가해주세요
-    "http://localhost",
-    "http://localhost:3000",
-    "http://220.68.27.149",
-    "http://220.68.27.149:3000"
+    "*"
 ]
 
 app.add_middleware(
@@ -54,3 +51,15 @@ async def upload_image(image_files: Dict[str, List[str]]):
     final_result = {'result': results}
     
     return JSONResponse(content=final_result)
+
+information_list = []
+
+@app.post("/push") # 데이터 저장하기
+def pull_data(data: dict):
+    information_list.append(data)
+    return {"message": "Data received successfully"}
+
+@app.get("/pull") # 데이터 불러오기
+def get_data():
+    return information_list
+
