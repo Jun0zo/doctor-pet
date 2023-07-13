@@ -9,10 +9,7 @@ app = FastAPI()
 
 origins = [
     # 허용할 출처를 여기에 추가해주세요
-    "http://localhost",
-    "http://localhost:3000",
-    "http://220.68.27.149",
-    "http://220.68.27.149:3000"
+    "*"
 ]
 
 app.add_middleware(
