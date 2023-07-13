@@ -4,11 +4,12 @@ from typing import List, Dict
 from demo_FastAPI import run
 import base64
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import hashlib
 from datetime import datetime
 
 app = FastAPI()
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 origins = [
     # 허용할 출처를 여기에 추가해주세요
     "*"
@@ -23,6 +24,7 @@ app.add_middleware(
 )
 
 @app.post("/upload")
+
 
 
 async def upload_image(image_files: Dict[str, List[str]]):
@@ -43,7 +45,7 @@ async def upload_image(image_files: Dict[str, List[str]]):
         current_time = datetime.now().strftime("%Y%m%d%H%M%S%f")
         hash_value = hashlib.md5(current_time.encode()).hexdigest()
 
-        file_name = f"front_come/{hash_value}.jpg"
+        file_name = f"static/{hash_value}.jpg"
         with open(file_name, "wb") as f:
             f.write(img_processed)
 
@@ -55,7 +57,7 @@ async def upload_image(image_files: Dict[str, List[str]]):
             result["disease_detected"] = True
             result["disease_name"] = output[0]
             result["disease_probability"] = float(output[1])
-            result["image_url"] = "/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/front_come/{hash_value}.jpg"
+            result["image_url"] = f"/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/static/{hash_value}.jpg"
         results.append(result)
         
     final_result = {'result': results}
