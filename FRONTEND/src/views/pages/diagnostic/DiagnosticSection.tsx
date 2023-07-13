@@ -95,14 +95,7 @@ const DiagnosticSection = () => {
   const [files, setFiles] = useState([]);
   const [diagnosticResults, setDiagnositcResults] = useState<
     Array<diagnositcResultType>
-  >([
-    {
-      disease_detected: true,
-      disease_name: "D1",
-      disease_probability: 76.1,
-      image_url: "image",
-    },
-  ]);
+  >([]);
   const [isDetected, setIsDetected] = useState<boolean>(false);
   const [hospitalSearchResult, setHospitalSearchResult] =
     useState<hospitalSearchResultType>({
@@ -130,10 +123,6 @@ const DiagnosticSection = () => {
       }
 
       // const result = await sendImage(base64Results);
-
-      axios.post('http://220.68.27.149:8000/upload', {image: base64Results}, {headers: {
-        'Content-Type': 'application/json',
-      },})
       axios
         .post(
           "https://220.68.27.149:8000/upload",
@@ -226,7 +215,7 @@ const DiagnosticSection = () => {
       setLoading(false);
       setHospitalSearchResult({
         hospitalName: selectedHospital,
-        distance: 32,
+        distance: 1.2,
         datetime: selectedDate,
       });
     }, 5000);
@@ -307,6 +296,7 @@ const DiagnosticSection = () => {
               ) : (
                 <Fade in={step === 2 && !loading} timeout={2000}>
                   <ImageSearchResult
+                    isDetected={isDetected}
                     diagnosticResults={diagnosticResults}
                     setIsDetected={setIsDetected}
                   />
@@ -377,14 +367,14 @@ const DiagnosticSection = () => {
                     <img src={Success.src} height={"150px"} width={"150px"} />
                     <Typography variant="h5">예약을 완료했어요!</Typography>
 
-                    <Stack direction="row" spacing={1}>
+                    {/* <Stack direction="row" spacing={1}>
                       <IconButton aria-label="delete">
                         <PinDropIcon />
                       </IconButton>
                       <IconButton color="secondary" aria-label="add an alarm">
                         <PinDropIcon />
                       </IconButton>
-                    </Stack>
+                    </Stack> */}
                   </Box>
                 </Fade>
               ))}
@@ -511,6 +501,20 @@ const DiagnosticSection = () => {
                 }}
               >
                 다음으로
+              </Button>
+            </>
+          )}
+
+          {step === 6 && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  router.push("/calendar")
+                }}
+              >
+                캘린더 확인
               </Button>
             </>
           )}

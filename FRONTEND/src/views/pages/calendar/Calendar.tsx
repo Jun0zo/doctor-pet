@@ -46,6 +46,14 @@ const Calendar = (props: CalendarType) => {
   // ** Refs
   const calendarRef = useRef();
 
+  interface CalendarEvent {
+  _def: {
+    extendedProps: {
+      calendar: string;
+    };
+  };
+}
+
   useEffect(() => {
     if (calendarApi === null) {
       // @ts-ignore
@@ -99,16 +107,17 @@ const Calendar = (props: CalendarType) => {
     */
       navLinks: true,
 
-      //   eventClassNames({ event: calendarEvent }: any) {
-      //     // @ts-ignore
-      //     const colorName =
-      //       calendarsColor[calendarEvent._def.extendedProps.calendar];
+        eventClassNames({ event: calendarEvent }: any) {
+          // @ts-ignore: Ignore the error about indexing with a string
+          // @ts-ignore
+          const colorName =
+            calendarsColor[calendarEvent._def.extendedProps.calendar];
 
-      //     return [
-      //       // Background Color
-      //       `bg-${colorName}`,
-      //     ];
-      //   },
+          return [
+            // Background Color
+            `bg-${colorName}`,
+          ];
+        },
 
       eventClick({ event: clickedEvent }: any) {
         // dispatch(handleSelectEvent(clickedEvent))

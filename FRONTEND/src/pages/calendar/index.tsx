@@ -56,24 +56,7 @@ const AppCalendar = () => {
 
   const [store, setStore] = useState<any>({
     events: [
-      {
-        // id: 1,
-        // url: "",
-        title: "백내장",
-        date: new Date(),
-        extendedProps: {
-          calendar: "Diagnostic",
-        },
-      },
-      {
-        // id: 1,
-        // url: "",
-        title: "백내장2",
-        date: new Date(),
-        extendedProps: {
-          calendar: "Reservation",
-        },
-      },
+      
     ],
     selectedEvent: null,
     selectedCalendars: ["Diagnostic", "Reservation"],
@@ -125,7 +108,7 @@ const AppCalendar = () => {
       setStore((old:any) => {
         const updatedStore = { ...old };
 
-        updatedStore.events = response.data.map((info:any) => { return {type: info.type, title: info.name, date: new Date(info.time)} })
+        updatedStore.events = response.data.map((info:any) => { return {extendedProps : {calendar:info.type} , title: info.name, date: new Date(info.time)} })
         console.log(updatedStore)
         return updatedStore
       })

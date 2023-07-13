@@ -18,11 +18,13 @@ import Fail from "src/images/fail.gif";
 
 type Prop = {
   diagnosticResults: Array<diagnositcResultType>;
+  isDetected: boolean,
   setIsDetected: Dispatch<SetStateAction<boolean>>;
 };
 
 type PreviewProp = {
   diagnosticResults: Array<diagnositcResultType>;
+  isDetected: boolean,
   totalLength: number;
 };
 
@@ -52,8 +54,11 @@ const Detail = ({ diagnosticResults }: DetailProp) => {
             <li
               onMouseOver={() => setIsHovering(1)}
               onMouseOut={() => setIsHovering(0)}
+              onClick={() => {
+
+              }}
               style={
-                isHovering ? { backgroundColor: "gray", cursor: "pointer" } : {}
+                isHovering ? { backgroundColor: "#e7e7e7", cursor: "pointer" } : {}
               }
             >
               <Box
@@ -63,11 +68,12 @@ const Detail = ({ diagnosticResults }: DetailProp) => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   width: "100%",
+                  padding:"10px"
                 }}
               >
-                <img src={diagnosticResult.image_url} alt="" width="100px" />
-                <Typography variant="h6">
-                  {diagnosticResult.disease_name}
+                <img src={"https://220.68.27.149:8000/" + diagnosticResult.image_url} alt="" width="100px" height="100px" />
+                <Typography>
+                  {`${diagnosticResult.disease_name}${(diagnosticResult.disease_probability)*100}%`}
                 </Typography>
               </Box>
             </li>
@@ -78,10 +84,10 @@ const Detail = ({ diagnosticResults }: DetailProp) => {
   );
 };
 
-const Preview = ({ diagnosticResults, totalLength }: PreviewProp) => {
+const Preview = ({ diagnosticResults, isDetected, totalLength }: PreviewProp) => {
   return (
     <div>
-      {diagnosticResults.length === 0 ? (
+      {!isDetected ? (
         <>
           <img src={Success.src} height={"150px"} width={"150px"} />
           <Typography variant="h6">모두 정상입니다!</Typography>
@@ -99,7 +105,7 @@ const Preview = ({ diagnosticResults, totalLength }: PreviewProp) => {
   );
 };
 
-const ImageSearchResult = ({ diagnosticResults, setIsDetected }: Prop) => {
+const ImageSearchResult = ({ diagnosticResults, isDetected, setIsDetected }: Prop) => {
   const [detailed, setDetailed] = useState<boolean>(false);
   const [detectedResults, setDetectedResults] = useState<
     diagnositcResultType[]
@@ -141,6 +147,7 @@ const ImageSearchResult = ({ diagnosticResults, setIsDetected }: Prop) => {
       ) : (
         <>
           <Preview
+            isDetected={isDetected}
             diagnosticResults={detectedResults}
             totalLength={diagnosticResults.length}
           />
