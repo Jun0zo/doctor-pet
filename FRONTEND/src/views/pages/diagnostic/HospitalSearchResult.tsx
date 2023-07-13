@@ -56,7 +56,7 @@ const Preview = ({ hospitalSearchResult }: PreviewProp) => {
       </p>
       <p style={{ display: "flex", alignItems: "center" }}>
         <AccessTimeIcon sx={{ marginRight: "10px" }} />
-        {hospitalSearchResult.datetime.getTime()}시
+        {hospitalSearchResult.datetime.getHours()}시
       </p>
       <Typography sx={{ display: "flex", alignItems: "center" }} variant="h6">
         이 병원으로 예약할까요?
