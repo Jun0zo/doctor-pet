@@ -122,7 +122,7 @@ const DiagnosticSection = () => {
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
-      const base64Results = [];
+      const base64Results: any = [];
       for (const file of files) {
         // Convert to Base64
         const base64 = await convertToBase64(file);
@@ -134,14 +134,6 @@ const DiagnosticSection = () => {
       axios.post('http://220.68.27.149:8000/upload', {image: base64Results}, {headers: {
         'Content-Type': 'application/json',
       },})
-        .then(response => {
-          response.data.result.map((result:diagnositcResultType)  => {
-              
-              const decodedString = atob(result.image);
-              const url = decodeURIComponent(decodedString);
-              result.image
-            }
-          )
       axios
         .post(
           "https://220.68.27.149:8000/upload",
