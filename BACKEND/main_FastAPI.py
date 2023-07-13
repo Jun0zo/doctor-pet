@@ -34,8 +34,6 @@ app.add_middleware(
 
 @app.post("/upload")
 
-
-
 async def upload_image(image_files: Dict[str, List[str]]):
     #file_path = os.path.join(directory, file_name)
     files = []
