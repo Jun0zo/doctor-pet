@@ -144,35 +144,37 @@ const DiagnosticSection = () => {
   };
 
   const requestSchedule = () => {
-    const reqBody = [{
-      type:"Diagnostic",
-      name: diagnosticResults.map(result => result.disease_name).join(),
-      time: new Date(),
-      
-    },
-    {
-      type:"Reservation",
-      name: hospitalSearchResult.hospitalName,
-      time: hospitalSearchResult.datetime,
-    }]
+    const reqBody = [
+      {
+        type: "Diagnostic",
+        name: diagnosticResults.map((result) => result.disease_name).join(),
+        time: new Date(),
+      },
+      {
+        type: "Reservation",
+        name: hospitalSearchResult.hospitalName,
+        time: hospitalSearchResult.datetime,
+      },
+    ];
 
-    axios.post('https://220.68.27.149:8000/schedule', reqBody)
-      .then(response => {
-      console.log('Schedule request successful');
-      console.log(response.data);
+    axios
+      .post("https://220.68.27.149:8000/schedule", reqBody)
+      .then((response) => {
+        console.log("Schedule request successful");
+        console.log(response.data);
       })
-      .catch(error => {
-      // Handle error
-      console.error('Error in scheduling request:', error);
-    });
-  }
+      .catch((error) => {
+        // Handle error
+        console.error("Error in scheduling request:", error);
+      });
+  };
 
   const requestFile = async (files: any) => {
     setLoading(true);
     setStep(2);
+    await fetchImages(files);
     setTimeout(async () => {
       setLoading(false);
-      await fetchImages(files);
     }, 5000);
   };
 
@@ -187,7 +189,12 @@ const DiagnosticSection = () => {
       setLoading(true);
     }
     // 병원 선택
-    const hospitals = ["스마일 동물병원", "해맑은 동물병원"];
+    const hospitals = [
+      "스마일 동물병원",
+      "해맑은 동물병원",
+      "가족동물병원",
+      "수송반려동물병원",
+    ];
     let randomIndex = Math.floor(Math.random() * hospitals.length);
     let selectedHospital = "";
     if (!fixHospital) {
@@ -391,7 +398,9 @@ const DiagnosticSection = () => {
                   }}
                 >
                   <img src={Success.src} height={"150px"} width={"150px"} />
-                  <Typography variant="h5">일정을 캘린더에 저장했어요!</Typography>
+                  <Typography variant="h5">
+                    일정을 캘린더에 저장했어요!
+                  </Typography>
                 </Box>
               </Fade>
             )}
@@ -511,7 +520,7 @@ const DiagnosticSection = () => {
                 variant="contained"
                 color="success"
                 onClick={() => {
-                  router.push("/calendar")
+                  router.push("/calendar");
                 }}
               >
                 캘린더 확인

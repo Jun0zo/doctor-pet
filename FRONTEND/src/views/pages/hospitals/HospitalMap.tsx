@@ -7,7 +7,7 @@ const HospitalMap = () => {
   const markers = [
     {
       name: "현재위치",
-      position: { lat: 5.96904122789886, lng: 126.71904353641412 },
+      position: { lat: 35.96904122789886, lng: 126.71904353641412 },
     },
     {
       name: "스마일 동물병원",
@@ -41,7 +41,7 @@ const HospitalMap = () => {
 
   return (
     <Map
-      center={{ lat: 5.96904122789886, lng: 126.71904353641412 }}
+      center={{ lat: 35.96904122789886, lng: 126.71904353641412 }}
       style={{ width: "100%", height: "450px" }}
       level={3}
     >
