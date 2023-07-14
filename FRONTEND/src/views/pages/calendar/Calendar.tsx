@@ -38,13 +38,21 @@ const Calendar = (props: CalendarType) => {
     calendarApi,
     calendarsColor,
     setCalendarApi,
-    // handleSelectEvent,
+    handleSelectEvent,
     handleLeftSidebarToggle,
     handleAddEventSidebarToggle,
   } = props;
 
   // ** Refs
   const calendarRef = useRef();
+
+  interface CalendarEvent {
+  _def: {
+    extendedProps: {
+      calendar: string;
+    };
+  };
+}
 
   useEffect(() => {
     if (calendarApi === null) {
@@ -99,20 +107,35 @@ const Calendar = (props: CalendarType) => {
     */
       navLinks: true,
 
-      //   eventClassNames({ event: calendarEvent }: any) {
-      //     // @ts-ignore
-      //     const colorName =
-      //       calendarsColor[calendarEvent._def.extendedProps.calendar];
+        eventClassNames({ event: calendarEvent }: any) {
+          // @ts-ignore: Ignore the error about indexing with a string
+          // @ts-ignore
+          const colorName =
+            calendarsColor[calendarEvent._def.extendedProps.calendar];
 
-      //     return [
-      //       // Background Color
-      //       `bg-${colorName}`,
-      //     ];
-      //   },
+          return [
+            // Background Color
+            `bg-${colorName}`,
+          ];
+        },
 
       eventClick({ event: clickedEvent }: any) {
         // dispatch(handleSelectEvent(clickedEvent))
+        console.log(clickedEvent.stat)
+        console.log(clickedEvent.title)
+        console.log(clickedEvent.extendedProps.calendar)
+        // handleSelectEvent()
+        handleSelectEvent( {
+          title: clickedEvent.title,
+          date: clickedEvent.start,
+          extendedProps: {
+            calendar: clickedEvent.extendedProps.calendar,
+          },
+        },);
+
+
         handleAddEventSidebarToggle();
+
 
         // * Only grab required field otherwise it goes in infinity loop
         // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
@@ -138,7 +161,7 @@ const Calendar = (props: CalendarType) => {
 
         // @ts-ignore
         // dispatch(handleSelectEvent(ev))
-        handleAddEventSidebarToggle();
+        // handleAddEventSidebarToggle();
       },
 
       /*

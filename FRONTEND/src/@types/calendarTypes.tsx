@@ -73,7 +73,7 @@ export type CalendarType = {
   handleLeftSidebarToggle: () => void;
   // updateEvent: (event: EventType) => void
   handleAddEventSidebarToggle: () => void;
-  // handleSelectEvent: (event: EventType) => void
+  handleSelectEvent: (event: EventType) => void
 };
 
 export type SidebarLeftType = {

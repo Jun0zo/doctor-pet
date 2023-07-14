@@ -29,6 +29,7 @@ import HospitalSearchResult from "./HospitalSearchResult";
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
 import DragDropFile from "src/views/pages/diagnostic/DragDropFile";
+import TakePicture from "src/views/pages/diagnostic/TakePicture";
 
 // ** Types Imports
 import diagnositcResultType from "src/@types/diagnositcResult";
@@ -43,10 +44,9 @@ import Success from "src/images/success.gif";
 // ** Third Party
 import axios from "axios";
 
-const CaptureContent = () => {
-  // return <WebcamSnapshot />;
-  // return <DragDropFile />;
-};
+function isMobileDevice() {
+  return /Mobi|Android/i.test(window.navigator.userAgent);
+}
 
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -95,14 +95,7 @@ const DiagnosticSection = () => {
   const [files, setFiles] = useState([]);
   const [diagnosticResults, setDiagnositcResults] = useState<
     Array<diagnositcResultType>
-  >([
-    {
-      disease_detected: true,
-      disease_name: "D1",
-      disease_probability: 76.1,
-      image: "image",
-    },
-  ]);
+  >([]);
   const [isDetected, setIsDetected] = useState<boolean>(false);
   const [hospitalSearchResult, setHospitalSearchResult] =
     useState<hospitalSearchResultType>({
@@ -119,23 +112,20 @@ const DiagnosticSection = () => {
   }, []);
 
   const fetchImages = async (_files: File[]) => {
-    let diagnositcResult: diagnositcResultType[] = [];
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
-      const base64Results = [];
+      const base64Results: any = [];
       for (const file of files) {
         // Convert to Base64
         const base64 = await convertToBase64(file);
         base64Results.push(base64);
-        // diagnositcResult.push({ imageUrl: base64, result });
       }
 
       // const result = await sendImage(base64Results);
-
       axios
         .post(
-          "http://220.68.27.149:8000/upload",
+          "https://220.68.27.149:8000/upload",
           { encoded_images: base64Results },
           {
             headers: {
@@ -144,28 +134,45 @@ const DiagnosticSection = () => {
           }
         )
         .then((response) => {
-          response.data.result.map((result: diagnositcResultType) => {
-            const decodedString = atob(result.image);
-            const url = decodeURIComponent(decodedString);
-            result.image;
-          });
-          // setDiagnositcResults(response.data.result);
+          setDiagnositcResults(response.data.result);
         })
         .catch((error) => {
           console.error("Error sending image:", error);
           return "error";
         });
     }
-    return diagnositcResult;
   };
+
+  const requestSchedule = () => {
+    const reqBody = [{
+      type:"Diagnostic",
+      name: diagnosticResults.map(result => result.disease_name).join(),
+      time: new Date(),
+      
+    },
+    {
+      type:"Reservation",
+      name: hospitalSearchResult.hospitalName,
+      time: hospitalSearchResult.datetime,
+    }]
+
+    axios.post('https://220.68.27.149:8000/schedule', reqBody)
+      .then(response => {
+      console.log('Schedule request successful');
+      console.log(response.data);
+      })
+      .catch(error => {
+      // Handle error
+      console.error('Error in scheduling request:', error);
+    });
+  }
 
   const requestFile = async (files: any) => {
     setLoading(true);
     setStep(2);
     setTimeout(async () => {
       setLoading(false);
-      const results: diagnositcResultType[] = await fetchImages(files);
-      // setDiagnositcResults(results);
+      await fetchImages(files);
     }, 5000);
   };
 
@@ -208,7 +215,7 @@ const DiagnosticSection = () => {
       setLoading(false);
       setHospitalSearchResult({
         hospitalName: selectedHospital,
-        distance: 32,
+        distance: 1.2,
         datetime: selectedDate,
       });
     }, 5000);
@@ -258,10 +265,20 @@ const DiagnosticSection = () => {
               height: "400px",
             }}
           >
-            {step === 1 && (
+            {step === 1 && !isMobileDevice() && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
                   <DragDropFile
+                    handleRequestFile={requestFile}
+                    setFiles={setFiles}
+                  />
+                </Box>
+              </Fade>
+            )}
+            {step === 1 && isMobileDevice() && (
+              <Fade in={step === 1} timeout={2000}>
+                <Box sx={{ height: "100%" }}>
+                  <TakePicture
                     handleRequestFile={requestFile}
                     setFiles={setFiles}
                   />
@@ -279,6 +296,7 @@ const DiagnosticSection = () => {
               ) : (
                 <Fade in={step === 2 && !loading} timeout={2000}>
                   <ImageSearchResult
+                    isDetected={isDetected}
                     diagnosticResults={diagnosticResults}
                     setIsDetected={setIsDetected}
                   />
@@ -349,14 +367,14 @@ const DiagnosticSection = () => {
                     <img src={Success.src} height={"150px"} width={"150px"} />
                     <Typography variant="h5">예약을 완료했어요!</Typography>
 
-                    <Stack direction="row" spacing={1}>
+                    {/* <Stack direction="row" spacing={1}>
                       <IconButton aria-label="delete">
                         <PinDropIcon />
                       </IconButton>
                       <IconButton color="secondary" aria-label="add an alarm">
                         <PinDropIcon />
                       </IconButton>
-                    </Stack>
+                    </Stack> */}
                   </Box>
                 </Fade>
               ))}
@@ -373,7 +391,7 @@ const DiagnosticSection = () => {
                   }}
                 >
                   <img src={Success.src} height={"150px"} width={"150px"} />
-                  <Typography variant="h5">캘린더에 저장할까요?</Typography>
+                  <Typography variant="h5">일정을 캘린더에 저장했어요!</Typography>
                 </Box>
               </Fade>
             )}
@@ -467,6 +485,36 @@ const DiagnosticSection = () => {
                 }}
               >
                 예약하기
+              </Button>
+            </>
+          )}
+
+          {step === 5 && !loading && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  setLoading(true);
+                  setStep((step) => step + 1);
+                  requestSchedule();
+                }}
+              >
+                다음으로
+              </Button>
+            </>
+          )}
+
+          {step === 6 && (
+            <>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  router.push("/calendar")
+                }}
+              >
+                캘린더 확인
               </Button>
             </>
           )}

@@ -25,6 +25,9 @@ import SidebarLeft from "src/views/pages/calendar/SidebarLeft";
 import CalendarWrapper from "src/@core/styles/libs/fullcalendar";
 import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
+// ** Third Party
+import axios from "axios";
+
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
   Diagnostic: "error",
@@ -51,6 +54,15 @@ const AppCalendar = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [selectedCalendars, setSelectedCalendars] = useState<string[]>([]);
 
+  const [store, setStore] = useState<any>({
+    events: [
+      
+    ],
+    selectedEvent: null,
+    selectedCalendars: ["Diagnostic", "Reservation"],
+  })
+
+
   // ** Hooks
   const { settings } = useSettings();
 
@@ -69,24 +81,41 @@ const AppCalendar = () => {
   const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen);
 
   const handleAddEventSidebarToggle = () => {
+    console.log(store)
     setAddEventSidebarOpen(!addEventSidebarOpen);
   };
 
-  const store = {
-    events: [
-      {
-        // id: 1,
-        // url: "",
-        title: "Design Review",
-        date: new Date(),
-        extendedProps: {
-          calendar: "Diagnostic",
-        },
-      },
-    ],
-    selectedEvent: null,
-    selectedCalendars: ["Diagnostic", "Reservation"],
-  };
+  const handleSelectEvent = (newEvent: EventType) => {
+    console.log(newEvent)
+
+    setStore((old:any) => {
+      old.selectedEvent = newEvent;
+      return old
+    })
+  }
+
+  useEffect(() => {
+    console.log("store chagne", store)
+  }, [store])
+
+  useEffect(() => {
+    console.log("first", store)
+    const fetchEvents = () => {
+      axios.get('https://220.68.27.149:8000/get').then(response => {
+      // Handle successful response
+      console.log('GET request successful');
+      console.log(response.data);
+      setStore((old:any) => {
+        const updatedStore = { ...old };
+
+        updatedStore.events = response.data.map((info:any) => { return {extendedProps : {calendar:info.type} , title: info.name, date: new Date(info.time)} })
+        console.log(updatedStore)
+        return updatedStore
+      })
+    })}
+
+    fetchEvents()
+  }, [])
 
   return (
     <Box
@@ -107,19 +136,6 @@ const AppCalendar = () => {
             }),
           }}
         >
-          {/* <SidebarLeft
-        store={store}
-        mdAbove={mdAbove}
-        // dispatch={dispatch}
-        calendarsColor={calendarsColor}
-        leftSidebarOpen={leftSidebarOpen}
-        leftSidebarWidth={leftSidebarWidth}
-        // handleSelectEvent={handleSelectEvent}
-        // handleAllCalendars={handleAllCalendars}
-        // handleCalendarsUpdate={handleCalendarsUpdate}
-        handleLeftSidebarToggle={handleLeftSidebarToggle}
-        handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-      /> */}
           <Box
             sx={{
               p: 5,
@@ -141,7 +157,7 @@ const AppCalendar = () => {
               calendarApi={calendarApi}
               calendarsColor={calendarsColor}
               setCalendarApi={setCalendarApi}
-              // handleSelectEvent={handleSelectEvent}
+              handleSelectEvent={handleSelectEvent}
               handleLeftSidebarToggle={handleLeftSidebarToggle}
               handleAddEventSidebarToggle={handleAddEventSidebarToggle}
             />
