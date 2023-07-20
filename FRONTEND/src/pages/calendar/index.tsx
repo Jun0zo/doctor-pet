@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 // ** MUI Imports
-import Box from "@mui/material/Box";
+import {Box, Button} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 // ** Hooks
 import { useSettings } from "src/@core/hooks/useSettings";
+
 
 // ** Types
 import {
@@ -27,6 +28,7 @@ import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
 // ** Third Party
 import axios from "axios";
+import { useRouter } from "next/router";
 
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
@@ -61,6 +63,8 @@ const AppCalendar = () => {
     selectedEvent: null,
     selectedCalendars: ["Diagnostic", "Reservation"],
   })
+
+  const router = useRouter();
 
 
   // ** Hooks
@@ -123,7 +127,9 @@ const AppCalendar = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        flexDirection:"column",
+        minHeight: "100vh",
+        gap:"30px"
       }}
     >
       <Box sx={{ maxWidth: "800px" }}>
@@ -176,6 +182,15 @@ const AppCalendar = () => {
           />
         </CalendarWrapper>
       </Box>
+      <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              router.push("/home");
+            }}
+          >
+            홈으로
+          </Button>
     </Box>
   );
 };

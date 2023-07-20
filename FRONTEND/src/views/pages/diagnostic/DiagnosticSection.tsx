@@ -135,6 +135,7 @@ const DiagnosticSection = () => {
         )
         .then((response) => {
           setDiagnositcResults(response.data.result);
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Error sending image:", error);
@@ -162,6 +163,7 @@ const DiagnosticSection = () => {
       .then((response) => {
         console.log("Schedule request successful");
         console.log(response.data);
+        
       })
       .catch((error) => {
         // Handle error
@@ -173,9 +175,9 @@ const DiagnosticSection = () => {
     setLoading(true);
     setStep(2);
     await fetchImages(files);
-    setTimeout(async () => {
-      setLoading(false);
-    }, 5000);
+    // setTimeout(async () => {
+    //   setLoading(false);
+    // }, 7000);
   };
 
   const searchHospitals = (
@@ -272,7 +274,7 @@ const DiagnosticSection = () => {
               height: "400px",
             }}
           >
-            {step === 1 && !isMobileDevice() && (
+            {step === 1  && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
                   <DragDropFile
@@ -282,7 +284,7 @@ const DiagnosticSection = () => {
                 </Box>
               </Fade>
             )}
-            {step === 1 && isMobileDevice() && (
+            {/* {step === 1 && isMobileDevice() && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
                   <TakePicture
@@ -291,7 +293,7 @@ const DiagnosticSection = () => {
                   />
                 </Box>
               </Fade>
-            )}
+            )} */}
             {step === 2 &&
               (loading ? (
                 <Fade in={step === 2 && loading} timeout={2000}>
