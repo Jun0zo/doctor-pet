@@ -1,13 +1,13 @@
 // ** React Imports
 import { useEffect, useState } from "react";
 
+// ** Server Imports
+import server from "src/context/server";
+
 // ** MUI Imports
 import {Box, Button} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
-// ** Redux Imports
-import { useDispatch, useSelector } from "react-redux";
 
 // ** Hooks
 import { useSettings } from "src/@core/hooks/useSettings";
@@ -105,7 +105,7 @@ const AppCalendar = () => {
   useEffect(() => {
     console.log("first", store)
     const fetchEvents = () => {
-      axios.get('https://220.68.27.149:8000/get').then(response => {
+      server.get('/get').then(response => {
       // Handle successful response
       console.log('GET request successful');
       console.log(response.data);

@@ -7,6 +7,9 @@ import React, {
 } from "react";
 import { useRouter } from "next/router";
 
+// ** Server Imports
+import server from "src/context/server";
+
 // ** MUI Imports
 import {
   Box,
@@ -28,8 +31,7 @@ import HospitalSearchResult from "./HospitalSearchResult";
 
 // ** Components Imports
 import ProgressBar from "src/components/ProgressBar";
-import DragDropFile from "src/views/pages/diagnostic/DragDropFile";
-import TakePicture from "src/views/pages/diagnostic/TakePicture";
+import UploadFile from "src/views/pages/diagnostic/UploadFile";
 
 // ** Types Imports
 import diagnositcResultType from "src/@types/diagnositcResult";
@@ -43,10 +45,6 @@ import Success from "src/images/success.gif";
 
 // ** Third Party
 import axios from "axios";
-
-function isMobileDevice() {
-  return /Mobi|Android/i.test(window.navigator.userAgent);
-}
 
 const convertToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -123,9 +121,9 @@ const DiagnosticSection = () => {
       }
 
       // const result = await sendImage(base64Results);
-      axios
+      server
         .post(
-          "https://220.68.27.149:8000/upload",
+          "/upload",
           { encoded_images: base64Results },
           {
             headers: {
@@ -158,8 +156,8 @@ const DiagnosticSection = () => {
       },
     ];
 
-    axios
-      .post("https://220.68.27.149:8000/schedule", reqBody)
+    server
+      .post("/schedule", reqBody)
       .then((response) => {
         console.log("Schedule request successful");
         console.log(response.data);
@@ -274,26 +272,16 @@ const DiagnosticSection = () => {
               height: "400px",
             }}
           >
-            {step === 1  && (
+            {step === 1 && (
               <Fade in={step === 1} timeout={2000}>
                 <Box sx={{ height: "100%" }}>
-                  <DragDropFile
+                  <UploadFile
                     handleRequestFile={requestFile}
                     setFiles={setFiles}
                   />
                 </Box>
               </Fade>
             )}
-            {/* {step === 1 && isMobileDevice() && (
-              <Fade in={step === 1} timeout={2000}>
-                <Box sx={{ height: "100%" }}>
-                  <TakePicture
-                    handleRequestFile={requestFile}
-                    setFiles={setFiles}
-                  />
-                </Box>
-              </Fade>
-            )} */}
             {step === 2 &&
               (loading ? (
                 <Fade in={step === 2 && loading} timeout={2000}>
