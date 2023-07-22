@@ -122,16 +122,21 @@ const DiagnosticSection = () => {
     if (_files && _files.length > 0) {
       const files = Array.from(_files) as File[];
 
-      const base64Results = [];
+      const base64Results: any = [];
       for (const file of files) {
         // Convert to Base64
         const base64 = await convertToBase64(file);
         base64Results.push(base64);
       }
 
+      // const result = await sendImage(base64Results);
+
+      axios.post('http://220.68.27.149:8000/upload', {image: base64Results}, {headers: {
+        'Content-Type': 'application/json',
+      },})
       axios
         .post(
-          "http://220.68.27.149:8000/upload",
+          "https://220.68.27.149:8000/upload",
           { encoded_images: base64Results },
           {
             headers: {
@@ -162,7 +167,7 @@ const DiagnosticSection = () => {
       time: hospitalSearchResult.datetime,
     }]
 
-    axios.post('schedule', reqBody)
+    axios.post('https://220.68.27.149:8000/schedule', reqBody)
       .then(response => {
       console.log('Schedule request successful');
       console.log(response.data);

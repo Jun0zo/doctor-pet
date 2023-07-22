@@ -9,12 +9,11 @@ from config.yolof_config import yolof_config
 from dataset.coco import coco_class_index, coco_class_labels, COCODataset
 from dataset.transforms import ValTransforms
 from utils.misc import load_weight
-
 from models.detector import build_model
 
 #한글깨짐 방지
 from PIL import ImageFont, ImageDraw, Image
-font = ImageFont.truetype('font/MaruBuri-Bold.ttf', 16)
+font = ImageFont.truetype('/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/font/MaruBuri-Bold.ttf', 16)
 
 
 def plot_bbox_labels(img, bbox, label, cls_color, test_scale=0.4):
@@ -55,10 +54,10 @@ def run(image_file):
     max_size = 640
     mode = 'image'
     cuda = True
-    path_to_img = 'coco/COCO/val2017/'
-    path_to_save = 'det_results/images/'
+    #image_file = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/test/image.jpg'
+    path_to_save = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/det_results/images/FastAPI/'
     version = 'yolof50'
-    weight = 'weights/coco/yolof50/yolof50_epoch_50_67.64.pth'
+    weight = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/weights/coco/yolof50/yolof50_epoch_50_67.64.pth'
 
     # cuda
     if cuda:
@@ -104,9 +103,9 @@ def run(image_file):
 
     # ------------------------- 이미지 ----------------------------
     if mode == 'image':
-        # image = cv2.imread(file_location, cv2.IMREAD_COLOR)
-        image = Image.open(io.BytesIO(image_file)).convert('RGB')
-        image = np.array(image)
+        #image = cv2.imread(image_file, cv2.IMREAD_COLOR)
+        image = Image.open(io.BytesIO(image_file))
+        image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
         orig_h, orig_w, _ = image.shape
         orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
@@ -136,14 +135,16 @@ def run(image_file):
                                   cls_inds=cls_inds,
                                   class_colors=class_colors,
                                   vis_thresh=cfg['test_score_thresh'])
+    
 
         # cv2.imshow('detection', img_processed)
-        # save_filename = os.path.join(save_path, os.path.basename(file_location).replace('.jpg', '_result.jpg'))
+        # save_filename = os.path.join(save_path, os.path.basename('test').replace('.png', '_result.png'))
         # cv2.imwrite(save_filename, img_processed)
+        # cv2.imwrite(os.path.join(save_path, path_to_img.split('/')[-1].replace('.jpg', '_result.jpg')), img_processed)
         # print(f"결과 이미지 저장됨: {save_filename}")
         print(mess)
         
     return img_processed, mess
-if __name__ == '__main__':
-    file_location = 'IMG_D_A6_203174.jpg'  # 여기에 이미지 경로를 지정하세요
-    run(file_location)
+if __name__ == '__main__':  # 여기에 이미지 경로를 지정하세요
+    tmp = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/test/image.jpg'
+    run(tmp)
