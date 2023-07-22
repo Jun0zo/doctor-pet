@@ -46,7 +46,7 @@ const Preview = ({ hospitalSearchResult }: PreviewProp) => {
       </p>
       <p style={{ display: "flex", alignItems: "center" }}>
         <DirectionsRunIcon sx={{ marginRight: "10px" }} />
-        여기서 {hospitalSearchResult.distance}
+        여기서 {hospitalSearchResult.distance} KM
       </p>
       <p style={{ display: "flex", alignItems: "center" }}>
         <CalendarMonthIcon sx={{ marginRight: "10px" }} />

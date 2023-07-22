@@ -300,17 +300,18 @@ const AddEventSidebar = (props: AddEventSidebarType) => {
               )}
             </FormControl>
             <FormControl fullWidth sx={{ mb: 6 }}>
-              <Select
-                label="Calendar"
-                value={values.calendar}
-                labelId="event-calendar"
-                onChange={(e) =>
-                  setValues({ ...values, calendar: e.target.value })
-                }
-              >
-                <MenuItem value="Diagnostic">질병검출</MenuItem>
-                <MenuItem value="Reservation">병원예약</MenuItem>
-              </Select>
+            <Controller
+                name="title"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <TextField
+                    value={store.selectedEvent?.extendedProps.calendar === 'Reservation' ? "병원예약" : "질병탐지"}
+                    onChange={onChange}
+                    error={Boolean(errors.title)}
+                  />
+                )}
+              />
             </FormControl>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <RenderSidebarFooter />

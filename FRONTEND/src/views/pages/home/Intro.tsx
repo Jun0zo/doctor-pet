@@ -35,7 +35,7 @@ const StatusTable = () => {
             />
           </div>
           <Typography variant="h6" textAlign={"center"}>
-            46
+          174
           </Typography>
         </Box>
       </li>
@@ -43,7 +43,7 @@ const StatusTable = () => {
         <Box>
           <SickIcon sx={{ fontSize: "3rem" }} />
           <Typography variant="h6" textAlign={"center"}>
-            46
+            45
           </Typography>
         </Box>
       </li>
@@ -51,7 +51,7 @@ const StatusTable = () => {
         <Box>
           <VaccinesIcon sx={{ fontSize: "3rem" }} />
           <Typography variant="h6" textAlign={"center"}>
-            46
+            4
           </Typography>
         </Box>
       </li>
@@ -92,9 +92,9 @@ const Intro = () => {
             
           }}
         ><Box>
-              <Typography variant="h2">OKKY DOGGY</Typography>
+              <Typography variant="h2">Dr. Pet</Typography>
               <Typography variant="h5" mt={3}>
-                사진 한 장으로 강아지를 지켜주세요!
+                사진만으로 반려동물의 건강검진과 병원예약을 한번에!
               </Typography>
               <StatusTable />
             </Box>
