@@ -50,7 +50,7 @@ const MenuList = () => {
       title: "주변 약국",
       img: Pharmacy,
       describe: "주변에 어떤 약국이 있는지 알아볼까요?",
-      link: "/hospitals",
+      link: "/pharmacys",
     },
   ];
 

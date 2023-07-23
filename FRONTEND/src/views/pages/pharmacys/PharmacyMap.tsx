@@ -10,7 +10,7 @@ type MarkerType = {
   };
 }
 
-const HospitalMap = () => {
+const PharmacyMap = () => {
   const [markerIndex, setMarkerIndex] = useState(null);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
@@ -29,7 +29,7 @@ const HospitalMap = () => {
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          server.get("/hospitals/nearby", { params : {latitude: position.coords.latitude, longitude: position.coords.longitude}}).then((res) => {
+          server.get("/pharmacys/nearby", { params : {latitude: position.coords.latitude, longitude: position.coords.longitude}}).then((res) => {
             let data = res.data;
             console.log(data);
             data.forEach((element: any) => {
@@ -82,4 +82,4 @@ const HospitalMap = () => {
   );
 };
 
-export default HospitalMap;
+export default PharmacyMap;
