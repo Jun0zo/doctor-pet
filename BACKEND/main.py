@@ -33,6 +33,7 @@ app.add_middleware(
 )
 
 @app.post("/upload")
+
 async def upload_image(image_files: Dict[str, List[str]]):
     #file_path = os.path.join(directory, file_name)
     files = []
@@ -72,7 +73,7 @@ async def upload_image(image_files: Dict[str, List[str]]):
     return JSONResponse(content=final_result)
 
 # TinyDB 인스턴스 생성
-db = TinyDB('data/db.json')
+db = TinyDB('db.json')
 
 # TinyDB 테이블 생성
 #table = db.table('items')
@@ -87,7 +88,7 @@ def create_items(items: list[dict], request: Request):
 
     return {"success!"}
 
-@app.get("/schedule")
+@app.get("/get")
 def get_schedule(request: Request):
     user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
 
