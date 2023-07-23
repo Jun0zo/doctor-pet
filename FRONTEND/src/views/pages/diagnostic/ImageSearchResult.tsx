@@ -6,6 +6,9 @@ import React, {
   useEffect,
 } from "react";
 
+// ** Services Imports
+import { serverURL } from "src/context/server";
+
 // ** MUI Imports
 import { Box, Typography, Button } from "@mui/material";
 
@@ -79,7 +82,7 @@ const Detail = ({ diagnosticResults, setPageMode, setSelectedDetail }: DetailPro
                   padding:"10px"
                 }}
               >
-                <img src={"https://220.68.27.149:8000/" + diagnosticResult.image_url} alt="" width="100px" height="100px" />
+                <img src={serverURL + diagnosticResult.image_url} alt="" width="100px" height="100px" />
                 <Typography>
                   {`${diagnosticResult.disease_name}${(diagnosticResult.disease_probability)*100}%`}
                 </Typography>
@@ -116,7 +119,7 @@ const Preview = ({ diagnosticResults, isDetected, totalLength }: PreviewProp) =>
 const MoreDetail = ({ selectedDetail }: MoreDetailProp) => {
   return (
     <>
-      <img src={"https://220.68.27.149:8000/" + selectedDetail?.image_url} width={"200px"}></img>
+      <img src={serverURL + selectedDetail?.image_url} width={"200px"}></img>
       <div>
         <Typography>{selectedDetail?.disease_name} </Typography>
         <Typography>{selectedDetail?.disease_probability} 이란?</Typography>
