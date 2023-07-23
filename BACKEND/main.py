@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict
-from demo_FastAPI import run
+from model import run
 import base64
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,9 +11,13 @@ import cv2
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from tinydb import TinyDB, Query
 from pydantic import BaseModel
+from utils.get_hospital_info import get_sorted_hospitals_nearby
+import json
+
+with open('data/annotation_db.json', 'r') as file:
+    annotation_db = json.load(file)
 
 app = FastAPI()
-
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -66,6 +70,7 @@ async def upload_image(image_files: Dict[str, List[str]]):
             result["disease_name"] = output[0]
             result["disease_probability"] = float(output[1])
             result["image_url"] = f"static/{hash_value}.jpg"
+            result["disease_annotation"] = annotation_db[output[0]]
         results.append(result)
         
     final_result = {'result': results}
@@ -73,13 +78,13 @@ async def upload_image(image_files: Dict[str, List[str]]):
     return JSONResponse(content=final_result)
 
 # TinyDB 인스턴스 생성
-db = TinyDB('db.json')
+db = TinyDB('data/db.json')
 
 # TinyDB 테이블 생성
 #table = db.table('items')
 
 @app.post("/schedule")
-def create_items(items: list[dict], request: Request):
+def create_items(items: List[dict], request: Request):
     user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
 
     # 사용자 IP 주소를 키로 사용하여 데이터 저장
