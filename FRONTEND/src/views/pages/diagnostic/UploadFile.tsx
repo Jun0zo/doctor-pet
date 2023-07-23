@@ -54,13 +54,19 @@ const TakePicture = ({ handleRequestFile, setFiles }: TakePictureProp) => {
           canvas.width,
           canvas.height
         );
+        // canvas.toBlob((blob) => {
+        //   if (blob) {
+        //     const fileName = "captured_image.jpg"; // You can set a custom file name
+        //     const file = new File([blob], fileName, { type: "image/jpeg" });
+        //     alert(file)
+        //     handleRequestFile([file]);
+        //     setFiles((prevFiles: any) => [...prevFiles, file]);
+        //   }
+        // }, "image/jpeg");
         canvas.toBlob((blob) => {
           if (blob) {
-            const fileName = "captured_image.jpeg"; // You can set a custom file name
-            const file = new File([blob], fileName, { type: "image/jpeg" });
-
-            handleRequestFile([file]);
-            setFiles((prevFiles: any) => [...prevFiles, file]);
+            handleRequestFile([blob]);
+            setFiles((prevFiles: any) => [...prevFiles, blob]);
           }
         }, "image/jpeg");
       }
@@ -84,7 +90,7 @@ const TakePicture = ({ handleRequestFile, setFiles }: TakePictureProp) => {
         ></video>
       </Box>
       <Box sx={{textAlign:"center"}}>
-        <Button onClick={captureImage}>이미지 촬영</Button>
+        <Button onClick={captureImage} sx={{ color: "white", backgroundColor: "#ff6200", '&:hover': {backgroundColor: 'orange'}}} >이미지 촬영</Button>
       </Box>
     </Box>
   );
@@ -194,7 +200,10 @@ const UploadFile = ({handleRequestFile, setFiles} : Prop) => {
                 }
             </Box>
             <Box sx={{textAlign:"center"}}>
-                <Button onClick={() => {setIsCamera(val => !val)}}>카메라로 전환</Button>
+                <Button 
+                onClick={() => {setIsCamera(val => !val)}}
+                sx={{ color: "#ff6200"}}
+                >{!isCamera ? "카메라로 전환" : "갤러리로 전환"}</Button>
             </Box>
             
         </Box>
