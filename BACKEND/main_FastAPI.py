@@ -99,4 +99,5 @@ def get_schedule(request: Request):
 
 @app.get("/hospitals/nearby")
 def get_nearby_hospitals(latitude: float, longitude: float):
-    
+    sorted_hospitals = get_sorted_hospitals_nearby((latitude, longitude))
+    return sorted_hospitals.to_dict(orient='records')
