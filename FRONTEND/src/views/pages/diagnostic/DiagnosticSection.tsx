@@ -260,8 +260,8 @@ const DiagnosticSection = () => {
             </>
           ) : (
             <>
-              <Typography sx={{ mb: "10px" }}>{step} / 3</Typography>
-              <ProgressBar value={(step / 3) * 100} />
+              <Typography sx={{ mb: "10px" }}>{step} / 2</Typography>
+              <ProgressBar value={(step / 2) * 100} />
             </>
           )}
         </Box>
