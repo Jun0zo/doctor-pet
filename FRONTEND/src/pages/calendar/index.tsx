@@ -1,16 +1,17 @@
 // ** React Imports
 import { useEffect, useState } from "react";
 
+// ** Server Imports
+import server from "src/context/server";
+
 // ** MUI Imports
-import Box from "@mui/material/Box";
+import {Box, Button} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-// ** Redux Imports
-import { useDispatch, useSelector } from "react-redux";
-
 // ** Hooks
 import { useSettings } from "src/@core/hooks/useSettings";
+
 
 // ** Types
 import {
@@ -27,6 +28,7 @@ import AddEventSidebar from "src/views/pages/calendar/AddEventSidebar";
 
 // ** Third Party
 import axios from "axios";
+import { useRouter } from "next/router";
 
 // ** CalendarColors
 const calendarsColor: CalendarColors = {
@@ -56,28 +58,13 @@ const AppCalendar = () => {
 
   const [store, setStore] = useState<any>({
     events: [
-      {
-        // id: 1,
-        // url: "",
-        title: "백내장",
-        date: new Date(),
-        extendedProps: {
-          calendar: "Diagnostic",
-        },
-      },
-      {
-        // id: 1,
-        // url: "",
-        title: "백내장2",
-        date: new Date(),
-        extendedProps: {
-          calendar: "Reservation",
-        },
-      },
+      
     ],
     selectedEvent: null,
     selectedCalendars: ["Diagnostic", "Reservation"],
   })
+
+  const router = useRouter();
 
 
   // ** Hooks
@@ -118,14 +105,14 @@ const AppCalendar = () => {
   useEffect(() => {
     console.log("first", store)
     const fetchEvents = () => {
-      axios.get('https://220.68.27.149:8000/get').then(response => {
+      server.get('/get').then(response => {
       // Handle successful response
       console.log('GET request successful');
       console.log(response.data);
       setStore((old:any) => {
         const updatedStore = { ...old };
 
-        updatedStore.events = response.data.map((info:any) => { return {type: info.type, title: info.name, date: new Date(info.time)} })
+        updatedStore.events = response.data.map((info:any) => { return {extendedProps : {calendar:info.type} , title: info.name, date: new Date(info.time)} })
         console.log(updatedStore)
         return updatedStore
       })
@@ -140,7 +127,9 @@ const AppCalendar = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        flexDirection:"column",
+        minHeight: "100vh",
+        gap:"30px"
       }}
     >
       <Box sx={{ maxWidth: "800px" }}>
@@ -193,6 +182,15 @@ const AppCalendar = () => {
           />
         </CalendarWrapper>
       </Box>
+      <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              router.push("/home");
+            }}
+          >
+            홈으로
+          </Button>
     </Box>
   );
 };

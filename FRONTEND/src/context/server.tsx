@@ -1,3 +1,3 @@
 import axios from 'axios'
 
-export default axios.create({ baseURL: 'https://test2.taewonkim.com/' })
+export default axios.create({ baseURL: 'https://doctor-pet.site:8000/' })
