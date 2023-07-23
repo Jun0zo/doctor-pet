@@ -1,3 +1,5 @@
 import axios from 'axios'
 
-export default axios.create({ baseURL: 'https://doctor-pet.site:8000/' })
+export const serverURL = 'https://doctor-pet.site/api/'
+
+export default axios.create({ baseURL: serverURL })
