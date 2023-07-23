@@ -244,7 +244,7 @@ const DiagnosticSection = () => {
         height: "100vh",
       }}
     >
-      <Box sx={{ width: "300px" }}>
+      <Box sx={{ width: "300px", height:"600px" }}>
         <Box
           sx={{
             mb: "20px",

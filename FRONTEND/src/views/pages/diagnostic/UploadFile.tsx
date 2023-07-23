@@ -7,7 +7,7 @@ function isMobileDevice() {
 
 type TakePictureProp = {
   handleRequestFile: (files: any) => void;
-  setFiles: any // Dispatch<SetStateAction<Blob[]>>;
+  setFiles: any // Dispatch<SetStateAction<never[]>>;
 };
 
 const TakePicture = ({ handleRequestFile, setFiles }: TakePictureProp) => {
@@ -56,8 +56,11 @@ const TakePicture = ({ handleRequestFile, setFiles }: TakePictureProp) => {
         );
         canvas.toBlob((blob) => {
           if (blob) {
-            handleRequestFile([blob]);
-            setFiles((prevFiles: any) => [...prevFiles, blob]);
+            const fileName = "captured_image.jpeg"; // You can set a custom file name
+            const file = new File([blob], fileName, { type: "image/jpeg" });
+
+            handleRequestFile([file]);
+            setFiles((prevFiles: any) => [...prevFiles, file]);
           }
         }, "image/jpeg");
       }
@@ -73,13 +76,13 @@ const TakePicture = ({ handleRequestFile, setFiles }: TakePictureProp) => {
 
   return (
     <Box sx={{display:"flex", flexDirection:"column", justifyContent:"center", alignContent:"center",}}>
-      <div>
+      <Box sx={{textAlign:"center"}}>
         <video
           ref={videoRef}
-          style={{ width: "100%", maxWidth: "500px" }}
+          style={{ width: "100%", maxWidth: "500px", maxHeight:"300px", margin:"auto" }}
           autoPlay
         ></video>
-      </div>
+      </Box>
       <Box sx={{textAlign:"center"}}>
         <Button onClick={captureImage}>이미지 촬영</Button>
       </Box>
