@@ -70,7 +70,7 @@ def sort_coordinates_by_distance(hospital_info, current_coords):
 
 def get_sorted_hospitals_nearby(current_coords):
     city_name = get_city_from_lat_long(current_coords)
-    hospital_info = pd.read_csv(f"{city_name}.csv", index_col=0, encoding='CP949', names=['idx', 'name', 'address', 'telephone'])
+    hospital_info = pd.read_csv(f"data/hospitals/{city_name}.csv", index_col=0, encoding='CP949', names=['idx', 'name', 'address', 'telephone'])
     
     # add coords column
     hospital_info[['latitude', 'longitude']] = hospital_info.apply(lambda row: pd.Series(get_lat_long_from_address(row['address'])), axis=1)
