@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { css, keyframes } from "@emotion/react";
 
 // ** MUI Imports
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Grow } from "@mui/material";
 import { useMediaQuery } from "react-responsive";
+
+import ListIcon1 from "src/images/list1-1.png";
+import ListIcon2 from "src/images/list2.png";
+import ListIcon3 from "src/images/list3.png";
 
 import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
@@ -12,8 +16,11 @@ import VaccinesIcon from "@mui/icons-material/Vaccines";
 
 import DogImage from "src/images/dog_image.png";
 
+import CountUp from 'react-countup';
+
 const StatusTable = () => {
   const [a, b] = useState([0, 0, 0]);
+
   return (
     <ul
       style={{
@@ -25,34 +32,25 @@ const StatusTable = () => {
     >
       <li>
         <Box>
-          <div style={{}}>
-            <ContentPasteSearchIcon
-              sx={{
-                fontSize: "3rem",
-                // backgroundColor: "white",
-                // borderRadius: "30px",
-                // padding: "5px",
-              }}
-            />
-          </div>
+          <img src={ListIcon1.src} height={60}/>
           <Typography variant="h6" textAlign={"center"}>
-          174
+          <CountUp start={0} end={175} duration={3} delay={1}/>
           </Typography>
         </Box>
       </li>
       <li>
         <Box>
-          <SickIcon sx={{ fontSize: "3rem" }} />
+        <img src={ListIcon2.src} height={60}/>
           <Typography variant="h6" textAlign={"center"}>
-            45
+          <CountUp start={0} end={45} duration={3} delay={1}/>
           </Typography>
         </Box>
       </li>
       <li>
         <Box>
-          <VaccinesIcon sx={{ fontSize: "3rem" }} />
+        <img src={ListIcon3.src} height={60}/>
           <Typography variant="h6" textAlign={"center"}>
-            4
+          <CountUp start={0} end={9} duration={3} delay={1}/>
           </Typography>
         </Box>
       </li>
@@ -63,6 +61,16 @@ const StatusTable = () => {
 const Intro = () => {
   const [width, setWidth] = useState("80%");
   const isXs = useMediaQuery({ maxWidth: 600 });
+  const [showFirst, setShowFirst] = useState(true);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+
+  const toggleTypography = () => {
+    setShowFirst((prevShowFirst) => !prevShowFirst);
+  };
+  
+
+  // You can adjust the timeout duration for the animation as per your preference
+  const animationTimeout = 1000; // 1 second
 
   const isDesktop: boolean = useMediaQuery({
     query: "(min-width:1024px)",
@@ -113,6 +121,21 @@ const Intro = () => {
   }
 `;
 
+const messages = [
+  '사진만으로 반려동물의 건강검진과 병원예약을 한번에!',
+  '바쁜 현대인들을 위한 원클릭 반려동물 검진 서비스'
+];
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
+  }, 5000); // Change the interval duration (in milliseconds) to control the alternation speed
+
+  return () => {
+    clearInterval(interval);
+  };
+}, [messages.length]);
+
 
   return (
     <>
@@ -141,10 +164,12 @@ const Intro = () => {
             
           }}
         ><Box>
-              <Typography variant="h2">Dr. Pet</Typography>
-              <Typography variant="h5" mt={3}>
-                사진만으로 반려동물의 건강검진과 병원예약을 한번에!
-              </Typography>
+              <Typography variant="h2" sx={{fontWeight:"900", color:"#2a1f01f0"}}>Dr. Pet</Typography>
+              <Grow in={showFirst}>
+                <Typography variant="h5" mt={3} >
+                {messages[currentMessageIndex]}
+                </Typography>
+              </Grow>
               <StatusTable />
             </Box>
           </Box>
