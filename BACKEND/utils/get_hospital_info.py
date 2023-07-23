@@ -76,7 +76,7 @@ def get_sorted_hospitals_nearby(current_coords):
     
     # add coords column
     hospital_info[['latitude', 'longitude']] = hospital_info.apply(lambda row: pd.Series(get_lat_long_from_address(row['address'])), axis=1)
-    hospital_info = hospital_info.dropna(subset=['latitude', 'longitude'])
+    hospital_info = hospital_info.dropna(subset=['latitude', 'longitude', 'telephone'])
     sorted_hospital_info = sort_coordinates_by_distance(hospital_info, current_coords)
     return sorted_hospital_info
 
@@ -86,6 +86,6 @@ def get_sorted_pharmacys_nearby(current_coords):
     
     # add coords column
     pharmacys_info[['latitude', 'longitude']] = pharmacys_info.apply(lambda row: pd.Series(get_lat_long_from_address(row['address'])), axis=1)
-    pharmacys_info = pharmacys_info.dropna(subset=['latitude', 'longitude'])
+    pharmacys_info = pharmacys_info.dropna(subset=['latitude', 'longitude', 'telephone'])
     sorted_pharmacys_info = sort_coordinates_by_distance(pharmacys_info, current_coords)
     return sorted_pharmacys_info
