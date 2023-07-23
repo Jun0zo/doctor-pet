@@ -35,6 +35,8 @@ def get_city_from_lat_long(coords):
 
         # Extract the city name from the API response
         city = data['documents'][0]['region_2depth_name']
+        if city:
+            city = city.strip().split()[0]
         return city
 
     except Exception as e:
