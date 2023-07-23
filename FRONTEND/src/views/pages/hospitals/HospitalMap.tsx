@@ -1,35 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+
+const markers = [
+  {
+    name: "스마일 동물병원",
+    position: { lat: 35.962301291766344, lng: 126.69467350485549 },
+  }, //
+  {
+    name: "해맑은 동물병원",
+    position: { lat: 35.965150464556594, lng: 126.70235346000632 },
+  }, //
+  {
+    name: "가족동물병원",
+    position: { lat: 35.96310205450654, lng: 126.71520674008266 },
+  }, //
+  {
+    name: "수송반려동물병원",
+    position: { lat: 35.96384791915608, lng: 126.71810855184232 },
+  }, //
+  {
+    name: "더사랑동물병원",
+    position: { lat: 35.96731128584994, lng: 126.71922704657139 },
+  }, //
+];
 
 const HospitalMap = () => {
   const [markerIndex, setMarkerIndex] = useState(null);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
 
-  const markers = [
-    {
-      name: "현재위치",
-      position: { lat: 35.96904122789886, lng: 126.71904353641412 },
-    },
-    {
-      name: "스마일 동물병원",
-      position: { lat: 35.962301291766344, lng: 126.69467350485549 },
-    }, //
-    {
-      name: "해맑은 동물병원",
-      position: { lat: 35.965150464556594, lng: 126.70235346000632 },
-    }, //
-    {
-      name: "가족동물병원",
-      position: { lat: 35.96310205450654, lng: 126.71520674008266 },
-    }, //
-    {
-      name: "수송반려동물병원",
-      position: { lat: 35.96384791915608, lng: 126.71810855184232 },
-    }, //
-    {
-      name: "더사랑동물병원",
-      position: { lat: 35.96731128584994, lng: 126.71922704657139 },
-    }, //
-  ];
+  useEffect(() => {
+    const getGeolocation = () => {
+      if (!navigator.geolocation) {
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          markers.push({name: "현재위치", position: { 
+            lat: position.coords.latitude, 
+            lng: position.coords.longitude
+          }})
+          // { lat: 35.96904122789886, lng: 126.71904353641412 }
+          console.log(markers)
+        },
+      );
+    };
+
+    getGeolocation();
+  }, []);
+
+
+ 
+
+
 
   const handleMarkerHover = (index: any) => {
     setMarkerIndex(index);
@@ -41,7 +67,8 @@ const HospitalMap = () => {
 
   return (
     <Map
-      center={{ lat: 35.96904122789886, lng: 126.71904353641412 }}
+      // center={{ lat: 35.96904122789886, lng: 126.71904353641412 }}
+      center={{ lat: latitude, lng: longitude }}
       style={{ width: "100%", height: "450px" }}
       level={3}
     >
