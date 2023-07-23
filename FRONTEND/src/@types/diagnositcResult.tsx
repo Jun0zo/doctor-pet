@@ -3,4 +3,5 @@ export default interface DiagnosticResultType {
   disease_name: string,
   disease_probability: number,
   image_url: string
+  disease_annotation: string
 }

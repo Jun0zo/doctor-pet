@@ -123,7 +123,7 @@ const MoreDetail = ({ selectedDetail }: MoreDetailProp) => {
       <div>
         <Typography>{selectedDetail?.disease_name} </Typography>
         <Typography>{selectedDetail?.disease_probability} 이란?</Typography>
-        <Typography>설명</Typography>
+        <Typography>{selectedDetail?.disease_annotation}</Typography>
       </div>
     </>
   )

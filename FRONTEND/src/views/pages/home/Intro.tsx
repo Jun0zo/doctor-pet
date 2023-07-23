@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { css, keyframes } from "@emotion/react";
 
 // ** MUI Imports
 import { Typography, Box } from "@mui/material";
@@ -66,23 +67,71 @@ const Intro = () => {
   const isDesktop: boolean = useMediaQuery({
     query: "(min-width:1024px)",
   });
+  
+  const spreadingAnimation = keyframes`
+  0% {
+    background: radial-gradient(circle at left, #ffa500 5%, transparent 5%);
+  }
+  5% {
+    background: radial-gradient(circle at left, #ffa500 5%, #e69500 20%, transparent 20%);
+  }
+  10% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, transparent 20%);
+  }
+  20% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, transparent 35%);
+  }
+  30% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, transparent 35%);
+  }
+  40% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, transparent 50%);
+  }
+  50% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, transparent 50%);
+  }
+  60% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, transparent 65%);
+  }
+  70% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, transparent 80%);
+  }
+  80% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, #ffffff 80%, transparent 100%);
+  }
+  85% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, #ffffff 80%, #ffffff 100%, #ffffff 100%, #ffffff 100%);
+  }
+  90% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, #ffffff 80%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%);
+  }
+  95% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, #ffffff 80%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%, transparent 100%);
+  }
+  100% {
+    background: radial-gradient(circle at left, #ffa500 5%, #ffb732 20%, #ffc95f 20%, #ffd98c 35%, #ffebba 50%, #fff9e7 50%, #ffffff 65%, #ffffff 80%, #ffffff 80%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%, #ffffff 100%);
+  }
+`;
+
 
   return (
     <>
       {isXs ? null : (
-        <Box
-        sx={{
-          background:
-            "radial-gradient(circle at left, #b2feb2 5%, #b2feb2 20%, #c6f0c6 20%, #c6f0c6 35%, #daf5da 35%, #daf5da 50%, #e9f9e9 50%, #e9f9e9 65%, #f3fcf3 65%, #f3fcf3 80%, #ffffff 80%, #ffffff 100%)",
-          backgroundPosition: "letf center",
-          height: "400px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "center",
-          position: "relative",
-        }}
-      >
+         <Box
+         sx={{
+           background:
+             "radial-gradient(circle at left, #b2feb2 5%, transparent 5%)",
+           backgroundPosition: "left center",
+           height: "400px",
+           display: "flex",
+           flexDirection: "column",
+           justifyContent: "space-between",
+           alignItems: "center",
+           position: "relative",
+           animation: `${spreadingAnimation} 3s ease-in-out forwards`, // Adjust the duration (3s) as needed
+           backgroundClip: "content-box", // Ensures the background is clipped within the box
+         }}
+       >
         <Box
           sx={{
             padding: "100px 0px",
@@ -100,7 +149,7 @@ const Intro = () => {
             </Box>
           </Box>
 
-          <Box sx={{ position: "absolute", bottom: "0", right: "0" }}>
+          <Box sx={{ position: "absolute", right: "0" }}>
             <img
               src={DogImage.src}
               style={{ transform: "scaleX(-1)", height: "400px", margin: "0" }}
