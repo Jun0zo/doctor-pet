@@ -56,6 +56,7 @@ const Detail = ({ diagnosticResults, setPageMode, setSelectedDetail }: DetailPro
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-around",
+        
       }}
     >
       <ul style={{ overflowY: "scroll", height: "80%" }}>
@@ -118,14 +119,14 @@ const Preview = ({ diagnosticResults, isDetected, totalLength }: PreviewProp) =>
 
 const MoreDetail = ({ selectedDetail }: MoreDetailProp) => {
   return (
-    <>
+    <div style={{overflowY:"scroll"}}>
       <img src={serverURL + selectedDetail?.image_url} width={"200px"}></img>
       <div>
-        <Typography>{selectedDetail?.disease_name} </Typography>
-        <Typography>{selectedDetail?.disease_probability} 이란?</Typography>
+        <Typography mb={2}> <span style={{fontWeight:"600", fontSize:"24px", color:"#ff6200"}}>{selectedDetail?.disease_name}</span>(이)란?</Typography> 
+        {/* <Typography>{selectedDetail?.disease_probability} </Typography> */}
         <Typography>{selectedDetail?.disease_annotation}</Typography>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -164,6 +165,7 @@ const ImageSearchResult = ({ diagnosticResults, isDetected, setIsDetected }: Pro
             onClick={() => {
               setPageMode('preview');
             }}
+            sx={{ color: "white", backgroundColor: "#ff6200", '&:hover': {backgroundColor: 'orange'}, }}
           >
             돌아가기
           </Button>
@@ -181,6 +183,7 @@ const ImageSearchResult = ({ diagnosticResults, isDetected, setIsDetected }: Pro
               onClick={() => {
                 setPageMode('detail');
               }}
+              sx={{ color: "white", backgroundColor: "#ff6200", '&:hover': {backgroundColor: 'orange'}, }}
             >
               자세히보기
             </Button>
@@ -197,7 +200,9 @@ const ImageSearchResult = ({ diagnosticResults, isDetected, setIsDetected }: Pro
               onClick={() => {
                 setPageMode('detail');
               }}
+              sx={{ color: "#ff6200"}}
             >
+              
               돌아가기
             </Button>
           ) : null}

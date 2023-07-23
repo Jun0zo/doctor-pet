@@ -95,6 +95,7 @@ const HospitalSearchResult = ({
                   true
                 );
               }}
+              sx={{ color: "#ff6200"}}
             >
               병원만 변경
             </Button>
@@ -108,6 +109,7 @@ const HospitalSearchResult = ({
                   false
                 );
               }}
+              sx={{ color: "#ff6200"}}
             >
               시간만 변경
             </Button>
