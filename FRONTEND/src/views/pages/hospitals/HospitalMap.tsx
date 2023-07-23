@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import server from "src/context/server";
 
 const markers = [
   {
@@ -35,10 +36,20 @@ const HospitalMap = () => {
         return;
       }
 
+      
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
+          server.get("/api/hospitals", { params : {latitude: position.coords.latitude, longitude: position.coords.longitude}}).then((res) => {
+            let data = res.data;
+            console.log(data);
+            data.forEach((element: any) => {
+              markers.push({name: element.name, position: {lat: element.latitude, lng: element.longitude}})
+            });
+          });
+
           markers.push({name: "현재위치", position: { 
             lat: position.coords.latitude, 
             lng: position.coords.longitude
