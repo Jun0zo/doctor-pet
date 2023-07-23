@@ -77,3 +77,13 @@ def get_sorted_hospitals_nearby(current_coords):
     hospital_info = hospital_info.dropna(subset=['latitude', 'longitude'])
     sorted_hospital_info = sort_coordinates_by_distance(hospital_info, current_coords)
     return sorted_hospital_info
+
+def get_sorted_pharmacys_nearby(current_coords):
+    city_name = get_city_from_lat_long(current_coords)
+    pharmacys_info = pd.read_csv(f"data/pharmacys/{city_name}.csv", index_col=0, encoding='CP949', names=['idx', 'name', 'address', 'telephone'])
+    
+    # add coords column
+    pharmacys_info[['latitude', 'longitude']] = pharmacys_info.apply(lambda row: pd.Series(get_lat_long_from_address(row['address'])), axis=1)
+    pharmacys_info = pharmacys_info.dropna(subset=['latitude', 'longitude'])
+    sorted_pharmacys_info = sort_coordinates_by_distance(pharmacys_info, current_coords)
+    return sorted_pharmacys_info

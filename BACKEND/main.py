@@ -11,7 +11,7 @@ import cv2
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from tinydb import TinyDB, Query
 from pydantic import BaseModel
-from utils.get_hospital_info import get_sorted_hospitals_nearby
+from utils.get_hospital_info import get_sorted_hospitals_nearby, 
 import json
 
 with open('data/annotation_db.json', 'r') as file:
@@ -106,4 +106,9 @@ def get_schedule(request: Request):
 @app.get("/hospitals/nearby")
 def get_nearby_hospitals(latitude: float, longitude: float):
     sorted_hospitals = get_sorted_hospitals_nearby((latitude, longitude))
+    return sorted_hospitals.to_dict(orient='records')
+
+@app.get("/pharmacys/nearby")
+def get_nearby_hospitals(latitude: float, longitude: float):
+    sorted_hospitals = get_sorted_pharmacys_nearby((latitude, longitude))
     return sorted_hospitals.to_dict(orient='records')
