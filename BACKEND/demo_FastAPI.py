@@ -13,7 +13,7 @@ from models.detector import build_model
 
 #한글깨짐 방지
 from PIL import ImageFont, ImageDraw, Image
-font = ImageFont.truetype('/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/font/MaruBuri-Bold.ttf', 16)
+font = ImageFont.truetype('/home/kdg/doctor-pet/BACKEND/font/MaruBuri-Bold.ttf', 16)
 
 
 def plot_bbox_labels(img, bbox, label, cls_color, test_scale=0.4):
@@ -55,9 +55,9 @@ def run(image_file):
     mode = 'image'
     cuda = True
     #image_file = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/test/image.jpg'
-    path_to_save = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/det_results/images/FastAPI/'
+    path_to_save = '/home/kdg/doctor-pet/BACKEND/det_results/images/FastAPI'
     version = 'yolof50'
-    weight = '/home/kyy/2023_반려동물질병검출/doctor-pet/BACKEND/weights/coco/yolof50/yolof50_epoch_50_67.64.pth'
+    weight = '/home/kdg/doctor-pet/BACKEND/weights/coco/yolof50/yolof50_epoch_50_67.64.pth'
 
     # cuda
     if cuda:

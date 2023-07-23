@@ -11,6 +11,7 @@ import cv2
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from tinydb import TinyDB, Query
 from pydantic import BaseModel
+import json
 
 app = FastAPI()
 
@@ -32,8 +33,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/upload")
+with open('/home/kdg/doctor-pet/BACKEND/annotation_db.json', 'r') as file:
+    annotation_db = json.load(file)
 
+
+@app.post("/upload")
 async def upload_image(image_files: Dict[str, List[str]]):
     #file_path = os.path.join(directory, file_name)
     files = []
@@ -42,9 +46,9 @@ async def upload_image(image_files: Dict[str, List[str]]):
         files.append(base64.b64decode(image.encode("utf-8")))
 
     results = []
-    
 
     for file in files:
+
         result = {}
         img_processed, mess = run(file)
         output = mess.split(":")
@@ -66,20 +70,18 @@ async def upload_image(image_files: Dict[str, List[str]]):
             result["disease_name"] = output[0]
             result["disease_probability"] = float(output[1])
             result["image_url"] = f"static/{hash_value}.jpg"
+            result["disease_annotation"] = annotation_db[output[0]]
         results.append(result)
-        
+
     final_result = {'result': results}
-    
+
     return JSONResponse(content=final_result)
 
 # TinyDB 인스턴스 생성
 db = TinyDB('db.json')
 
-# TinyDB 테이블 생성
-#table = db.table('items')
-
 @app.post("/schedule")
-def create_items(items: list[dict], request: Request):
+def create_items(items: List[dict], request: Request):
     user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
 
     # 사용자 IP 주소를 키로 사용하여 데이터 저장
@@ -87,6 +89,7 @@ def create_items(items: list[dict], request: Request):
     table.insert_multiple(items)
 
     return {"success!"}
+
 
 @app.get("/get")
 def get_schedule(request: Request):
