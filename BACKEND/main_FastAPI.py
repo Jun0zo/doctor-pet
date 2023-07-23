@@ -88,7 +88,7 @@ def create_items(items: list[dict], request: Request):
 
     return {"success!"}
 
-@app.get("/get")
+@app.get("/schedule")
 def get_schedule(request: Request):
     user_ip = request.client.host  # 클라이언트의 IP 주소 가져오기
 
